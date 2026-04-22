@@ -1,0 +1,371 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { siteConfig } from '../config/site.config';
+import clinicalTrialsDataRaw from '../data/clinical-trials.json';
+import type { ClinicalTrial, ClinicalTrialsData } from '../lib/data-types';
+import { emptyClinicalTrialsData } from '../lib/data-types';
+
+const { conditionDisplayName } = siteConfig;
+const clinicalTrialsData: ClinicalTrialsData = Array.isArray(clinicalTrialsDataRaw)
+  ? emptyClinicalTrialsData
+  : clinicalTrialsDataRaw as ClinicalTrialsData;
+
+const trials = clinicalTrialsData.trials;
+const lastUpdated = clinicalTrialsData.lastUpdated
+  ? new Date(clinicalTrialsData.lastUpdated).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+  : 'Not yet available';
+
+// Get status counts
+const statusCounts: Record<string, number> = {};
+trials.forEach((trial: ClinicalTrial) => {
+  const status = trial.status || 'UNKNOWN';
+  statusCounts[status] = (statusCounts[status] || 0) + 1;
+});
+
+// Get unique statuses for filtering
+const statuses = Object.keys(statusCounts).sort();
+
+// Get phase counts
+const phaseCounts: Record<string, number> = {};
+trials.forEach((trial: ClinicalTrial) => {
+  const phases = trial.phases || [];
+  phases.forEach((phase: string) => {
+    phaseCounts[phase] = (phaseCounts[phase] || 0) + 1;
+  });
+});
+
+// Get unique phases for filtering
+const phases = Object.keys(phaseCounts).sort((a, b) => {
+  const order = ['EARLY_PHASE1', 'PHASE1', 'PHASE2', 'PHASE3', 'PHASE4', 'NA'];
+  return order.indexOf(a) - order.indexOf(b);
+});
+
+// Get location counts (countries)
+const countryCounts: Record<string, number> = {};
+trials.forEach((trial: ClinicalTrial) => {
+  trial.locations.forEach((loc) => {
+    const country = loc.country || 'Unknown';
+    countryCounts[country] = (countryCounts[country] || 0) + 1;
+  });
+});
+
+const totalTrials = trials.length;
+const activeTrials = trials.filter((trial: ClinicalTrial) =>
+  ['RECRUITING', 'ENROLLING_BY_INVITATION', 'ACTIVE_NOT_RECRUITING'].includes(trial.status)
+).length;
+
+// Status display names
+const statusLabels: Record<string, string> = {
+  'RECRUITING': 'Recruiting',
+  'ENROLLING_BY_INVITATION': 'Enrolling by Invitation',
+  'ACTIVE_NOT_RECRUITING': 'Active, Not Recruiting',
+  'COMPLETED': 'Completed',
+  'TERMINATED': 'Terminated',
+  'WITHDRAWN': 'Withdrawn',
+  'SUSPENDED': 'Suspended',
+  'UNKNOWN': 'Unknown'
+};
+
+// Phase display names
+const phaseLabels: Record<string, string> = {
+  'EARLY_PHASE1': 'Early Phase 1',
+  'PHASE1': 'Phase 1',
+  'PHASE2': 'Phase 2',
+  'PHASE3': 'Phase 3',
+  'PHASE4': 'Phase 4',
+  'NA': 'N/A'
+};
+---
+
+<MainLayout
+  title={`Clinical Trials | ${conditionDisplayName}`}
+  description={`Browse ${totalTrials} ${conditionDisplayName} clinical trials from ClinicalTrials.gov`}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Clinical Trials</h1>
+      <p class="text-lg text-gray-600 mb-2">
+        Explore clinical trials for {conditionDisplayName} registered on ClinicalTrials.gov.
+      </p>
+      <p class="text-sm text-gray-500">
+        Last updated: {lastUpdated}
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg shadow-sm border border-blue-200">
+          <div class="text-3xl font-bold text-indigo-700" id="total-count">{totalTrials}</div>
+          <div class="text-sm text-indigo-600 font-medium">Total Trials</div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-lg shadow-sm border border-green-200">
+          <div class="text-3xl font-bold text-emerald-700">{activeTrials}</div>
+          <div class="text-sm text-emerald-600 font-medium">Active Trials</div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-50 to-pink-100 p-4 rounded-lg shadow-sm border border-purple-200">
+          <div class="text-3xl font-bold text-purple-700" id="filtered-count">{totalTrials}</div>
+          <div class="text-sm text-purple-600 font-medium">Trials Shown</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-gradient-to-br from-white to-slate-50 rounded-lg shadow-md p-6 mb-8 border border-slate-100">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Filter Trials</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Search -->
+        <div>
+          <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+            Search
+          </label>
+          <input
+            type="text"
+            id="search"
+            placeholder="Search by title, intervention, sponsor..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+          />
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+          <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
+          <select
+            id="status-filter"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Statuses ({totalTrials})</option>
+            {statuses.map(status => (
+              <option value={status}>
+                {statusLabels[status] || status} ({statusCounts[status]})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <!-- Phase Filter -->
+        <div>
+          <label for="phase-filter" class="block text-sm font-medium text-gray-700 mb-2">
+            Phase
+          </label>
+          <select
+            id="phase-filter"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Phases</option>
+            {phases.map(phase => (
+              <option value={phase}>
+                {phaseLabels[phase] || phase} ({phaseCounts[phase]})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="mt-4">
+        <button
+          id="clear-filters"
+          class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Trials List -->
+    <div class="space-y-6" id="trials-container">
+      {trials.map((trial: ClinicalTrial) => (
+        <div
+          class="trial-card bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+          data-status={trial.status}
+          data-phases={trial.phases.join(',')}
+          data-search-text={`${trial.briefTitle} ${trial.officialTitle || ''} ${trial.sponsor || ''} ${trial.interventions.map((intervention) => intervention.name).join(' ')}`.toLowerCase()}
+        >
+          <!-- Trial Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <a
+                  href={trial.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm font-mono text-primary-600 hover:text-primary-800"
+                >
+                  {trial.nctId}
+                </a>
+                <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  trial.status === 'RECRUITING' ? 'bg-green-100 text-green-800' :
+                  trial.status === 'ENROLLING_BY_INVITATION' ? 'bg-blue-100 text-blue-800' :
+                  trial.status === 'COMPLETED' ? 'bg-gray-100 text-gray-800' :
+                  trial.status === 'ACTIVE_NOT_RECRUITING' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-gray-100 text-gray-600'
+                }`}>
+                  {statusLabels[trial.status] || trial.status}
+                </span>
+                {trial.phases.length > 0 && (
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    {trial.phases.map((phase) => phaseLabels[phase] || phase).join(', ')}
+                  </span>
+                )}
+                {trial.hasResults && (
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-info-100 text-info-800">
+                    Has Results
+                  </span>
+                )}
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">
+                <a
+                  href={trial.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:text-primary-600 transition-colors"
+                >
+                  {trial.briefTitle}
+                </a>
+              </h3>
+            </div>
+          </div>
+
+          <!-- Trial Details -->
+          {trial.briefSummary && (
+            <p class="text-gray-700 mb-4 line-clamp-3">
+              {trial.briefSummary}
+            </p>
+          )}
+
+          <!-- Meta Info -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            {trial.sponsor && (
+              <div>
+                <span class="font-medium text-gray-700">Sponsor:</span>
+                <span class="text-gray-600 ml-1">{trial.sponsor}</span>
+              </div>
+            )}
+            {trial.enrollment && (
+              <div>
+                <span class="font-medium text-gray-700">Enrollment:</span>
+                <span class="text-gray-600 ml-1">
+                  {trial.enrollment} {trial.enrollmentType ? `(${trial.enrollmentType.toLowerCase()})` : ''}
+                </span>
+              </div>
+            )}
+            {trial.startDate && (
+              <div>
+                <span class="font-medium text-gray-700">Start Date:</span>
+                <span class="text-gray-600 ml-1">{new Date(trial.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</span>
+              </div>
+            )}
+            {trial.locations.length > 0 && (
+              <div>
+                <span class="font-medium text-gray-700">Locations:</span>
+                <span class="text-gray-600 ml-1">
+                  {trial.locations.length} site{trial.locations.length !== 1 ? 's' : ''}
+                  ({[...new Set(trial.locations.map(l => l.country))].join(', ')})
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Interventions */}
+          {trial.interventions.length > 0 && (
+            <div class="mt-4">
+              <span class="font-medium text-gray-700 text-sm">Interventions:</span>
+              <div class="flex flex-wrap gap-2 mt-2">
+                {trial.interventions.map(intervention => (
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    {intervention.type}: {intervention.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <!-- No Results Message -->
+    <div id="no-results" class="hidden text-center py-12">
+      <p class="text-gray-600 text-lg">No trials match your filters.</p>
+      <button
+        id="no-results-clear"
+        class="mt-4 px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+      >
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Client-side filtering
+    const searchInput = document.getElementById('search') as HTMLInputElement;
+    const statusFilter = document.getElementById('status-filter') as HTMLSelectElement;
+    const phaseFilter = document.getElementById('phase-filter') as HTMLSelectElement;
+    const clearFiltersBtn = document.getElementById('clear-filters') as HTMLButtonElement;
+    const noResultsClearBtn = document.getElementById('no-results-clear') as HTMLButtonElement;
+    const trialCards = document.querySelectorAll('.trial-card');
+    const trialsContainer = document.getElementById('trials-container');
+    const noResults = document.getElementById('no-results');
+    const filteredCount = document.getElementById('filtered-count');
+
+    function filterTrials() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedStatus = statusFilter.value;
+      const selectedPhase = phaseFilter.value;
+
+      let visibleCount = 0;
+
+      trialCards.forEach(card => {
+        const htmlCard = card as HTMLElement;
+        const searchText = htmlCard.dataset.searchText || '';
+        const status = htmlCard.dataset.status || '';
+        const phases = htmlCard.dataset.phases?.split(',') || [];
+
+        const matchesSearch = !searchTerm || searchText.includes(searchTerm);
+        const matchesStatus = !selectedStatus || status === selectedStatus;
+        const matchesPhase = !selectedPhase || phases.includes(selectedPhase);
+
+        if (matchesSearch && matchesStatus && matchesPhase) {
+          htmlCard.style.display = 'block';
+          visibleCount++;
+        } else {
+          htmlCard.style.display = 'none';
+        }
+      });
+
+      // Update count
+      if (filteredCount) {
+        filteredCount.textContent = visibleCount.toString();
+      }
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        trialsContainer?.classList.add('hidden');
+        noResults?.classList.remove('hidden');
+      } else {
+        trialsContainer?.classList.remove('hidden');
+        noResults?.classList.add('hidden');
+      }
+    }
+
+    function clearFilters() {
+      searchInput.value = '';
+      statusFilter.value = '';
+      phaseFilter.value = '';
+      filterTrials();
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterTrials);
+    statusFilter.addEventListener('change', filterTrials);
+    phaseFilter.addEventListener('change', filterTrials);
+    clearFiltersBtn.addEventListener('click', clearFilters);
+    noResultsClearBtn.addEventListener('click', clearFilters);
+  </script>
+</MainLayout>

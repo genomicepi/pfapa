@@ -1,0 +1,224 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { siteConfig } from '../../config/site.config';
+import institutionsRaw from '../../data/institutions.json';
+import papersRaw from '../../data/papers.json';
+import authorsRaw from '../../data/authors.json';
+import type { Paper, ResearchAuthor, ResearchInstitution } from '../../lib/data-types';
+
+const { conditionDisplayName } = siteConfig;
+const papers = papersRaw as Paper[];
+const authors = authorsRaw as ResearchAuthor[];
+
+export function getStaticPaths() {
+  const allInstitutions = institutionsRaw as ResearchInstitution[];
+  return allInstitutions.map(institution => ({
+    params: { id: institution.id },
+    props: { institution }
+  }));
+}
+
+const { institution } = Astro.props as { institution: ResearchInstitution };
+
+// Get papers from this institution
+const institutionPapers = papers
+  .filter((paper) => institution.conditionPapers.includes(paper.pmid))
+  .sort((a, b) => b.pubDate.localeCompare(a.pubDate));
+
+// Get researchers from this institution
+const institutionAuthors = authors.filter((author) =>
+  author.currentInstitutionId === `https://openalex.org/${institution.id}` ||
+  author.affiliationHistory.some((affiliation) => affiliation.toLowerCase().includes(institution.name.toLowerCase()))
+).sort((a, b) => b.conditionPapersCount - a.conditionPapersCount);
+---
+
+<MainLayout
+  title={`${institution.name} | ${conditionDisplayName} Research`}
+  description={`${institution.conditionPapersCount} ${conditionDisplayName} publications from ${institution.name}`}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">{institution.name}</h1>
+
+          <div class="flex flex-wrap gap-2 text-gray-600 mb-4">
+            {institution.type && (
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                {institution.type}
+              </span>
+            )}
+            {institution.city && institution.country && (
+              <span class="text-lg">
+                📍 {institution.city}, {institution.country}
+              </span>
+            )}
+          </div>
+
+          <div class="flex flex-wrap gap-4 mt-4">
+            {institution.openAlexUrl && (
+              <a
+                href={institution.openAlexUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                OpenAlex Profile
+              </a>
+            )}
+
+            {institution.wikipediaUrl && (
+              <a
+                href={institution.wikipediaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                Wikipedia
+              </a>
+            )}
+          </div>
+        </div>
+
+        {institution.imageUrl && (
+          <img
+            src={institution.imageUrl}
+            alt={institution.name}
+            class="w-32 h-32 object-contain ml-6"
+          />
+        )}
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl font-bold text-primary-600">{institution.conditionPapersCount}</div>
+        <div class="text-gray-600 text-sm">{conditionDisplayName} Publications</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl font-bold text-primary-600">{institutionAuthors.length}</div>
+        <div class="text-gray-600 text-sm">{conditionDisplayName} Researchers</div>
+      </div>
+    </div>
+
+    <!-- Associated Institutions -->
+    {institution.associatedInstitutions && institution.associatedInstitutions.length > 0 && (
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Associated Institutions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {institution.associatedInstitutions.map((assoc) => (
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div class="flex-1">
+                <div class="font-medium text-gray-900">{assoc.name}</div>
+                <div class="text-sm text-gray-500">{assoc.relationship}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Researchers -->
+    {institutionAuthors.length > 0 && (
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">{conditionDisplayName} Researchers</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {institutionAuthors.map(author => (
+            <a
+              href={`${import.meta.env.BASE_URL}researchers/${author.id.replace('https://openalex.org/', '')}/`}
+              class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary-500 hover:shadow-md transition-all"
+            >
+              <div>
+                <div class="font-semibold text-gray-900">{author.name}</div>
+                <div class="text-sm text-gray-600">
+                  {author.conditionPapersCount} publication{author.conditionPapersCount !== 1 ? 's' : ''}
+                  {author.hIndex > 0 && ` • h-index: ${author.hIndex}`}
+                </div>
+              </div>
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Publications -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Publications</h2>
+
+      <div class="space-y-6">
+        {institutionPapers.map(paper => (
+          <article class="border-b border-gray-200 pb-6 last:border-0">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              <a
+                href={paper.pubmedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-primary-600 transition-colors"
+              >
+                {paper.title}
+              </a>
+            </h3>
+
+            <div class="text-sm text-gray-600 mb-2">
+              {Array.isArray(paper.authors) && paper.authors.length > 0 && (
+                <span>
+                  {paper.authors.slice(0, 5).map((authorName) => typeof authorName === 'string' ? authorName : authorName.name).join(', ')}
+                  {paper.authors.length > 5 && `, et al.`}
+                </span>
+              )}
+            </div>
+
+            <div class="text-sm text-gray-500 mb-2">
+              <span class="font-medium">{paper.journal}</span>
+              {' • '}
+              <time>{paper.pubDate}</time>
+            </div>
+
+            {paper.abstract && paper.abstract !== 'No abstract available' && (
+              <p class="text-sm text-gray-700 mt-2 line-clamp-3">
+                {paper.abstract}
+              </p>
+            )}
+
+            <div class="mt-3 flex gap-3">
+              <a
+                href={paper.pubmedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-primary-600 hover:text-primary-800 font-medium"
+              >
+                View on PubMed →
+              </a>
+              {paper.doi && (
+                <a
+                  href={`https://doi.org/${paper.doi}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-primary-600 hover:text-primary-800 font-medium"
+                >
+                  DOI →
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</MainLayout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -1,0 +1,1497 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { siteConfig } from '../config/site.config';
+import papersRaw from '../data/papers.json';
+import authorsRaw from '../data/authors.json';
+import institutionsRaw from '../data/institutions.json';
+import type { Paper, PaperAuthor, ResearchAuthor, ResearchInstitution } from '../lib/data-types';
+
+const { conditionDisplayName } = siteConfig;
+const base = import.meta.env.BASE_URL;
+const papers = papersRaw as Paper[];
+const authors = authorsRaw as ResearchAuthor[];
+const institutions = institutionsRaw as ResearchInstitution[];
+
+type AuthorStat = {
+  name: string;
+  originalNames: Set<string>;
+  papers: string[];
+  collaborators: Set<string>;
+  institutions: Set<string>;
+  locations: Set<string>;
+  orcid: string;
+};
+
+type PaperWithYear = Paper & {
+  year: number | null;
+};
+
+type ResearcherSummary = {
+  name: string;
+  publications: number;
+  collaborators: number;
+  papers: string[];
+  institutions: string[];
+  locations: string[];
+  orcid: string;
+  originalNames: string[];
+};
+
+// Helper function to normalize author names
+function normalizeAuthorName(name: string): string {
+  if (!name) return '';
+
+  // Parse "LastName Initials" format
+  const parts = name.trim().split(/\s+/);
+  if (parts.length < 2) return name;
+
+  const lastName = parts[0];
+  const initials = parts.slice(1).join('');
+
+  // Remove periods and spaces from initials
+  const cleanInitials = initials.replace(/[.\s]/g, '');
+
+  // Use only first initial to group variations
+  // "Davis MD" and "Davis MDP" both become "Davis M"
+  const firstInitial = cleanInitials.charAt(0);
+
+  return `${lastName} ${firstInitial}`;
+}
+
+// Helper function to normalize institution names
+function normalizeInstitution(affiliation: string): string {
+  if (!affiliation) return '';
+
+  // Remove email addresses
+  let cleaned = affiliation.replace(/Electronic address:.*$/i, '').trim();
+
+  // Split by comma to get parts
+  const parts = cleaned.split(',').map((p: string) => p.trim());
+
+  // Generic terms that aren't specific enough (need parent institution)
+  const genericTerms = /^(Department of|Division of|Section of|Unit of|Laboratory of|Lab of|Institute of|Center for|Centre for|Rehabilitation Research Center|Research Center|Clinical Research|School of|EA \d+|Service de|Département de|Klinik für|Servicio de)\s+/i;
+
+  let institution = '';
+  let candidates = [];
+
+  // Collect all parts that look like institutions
+  for (let i = 0; i < Math.min(4, parts.length); i++) {
+    const part = parts[i];
+
+    // Check if this part contains strong institution keywords
+    if (/University|Universit[éèa]|Hospital|Medical Center|Medical Centre|Pharmaceuticals|Pharma|College|Clinic|Klinik|Academy of Sciences/i.test(part)) {
+      candidates.push({ part, priority: 10, index: i });
+    }
+    // Weaker institution keywords (only if they have a proper name)
+    else if (/Institute|Institut|Centro|Center|Centre/i.test(part)) {
+      // Check if it has a proper noun (capitalized word that's not a generic term)
+      const hasProperNoun = /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(Institute|Institut|Center|Centre)\b/.test(part);
+      if (hasProperNoun) {
+        candidates.push({ part, priority: 5, index: i });
+      }
+    }
+  }
+
+  // Pick the best candidate (highest priority, or earliest if tied)
+  if (candidates.length > 0) {
+    candidates.sort((a, b) => b.priority - a.priority || a.index - b.index);
+    institution = candidates[0].part;
+  } else if (parts.length > 0) {
+    // Fallback: use first non-generic part
+    institution = parts[0];
+  }
+
+  // Clean up the institution name
+  institution = institution
+    .replace(genericTerms, '') // Remove generic prefixes
+    .replace(/\(.*?\)/g, '') // Remove parentheticals
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .replace(/[,;].*$/, '') // Remove anything after comma/semicolon
+    .trim();
+
+  // Normalize specific variations
+  const normalizations = {
+    'Xenon Pharmaceuticals Inc': 'Xenon Pharmaceuticals',
+    'Genentech Inc.': 'Genentech',
+    'Yale School of Medicine': 'Yale University',
+    'Yale University School of Medicine': 'Yale University',
+    'Harvard Medical School': 'Harvard University',
+    'Stanford University School of Medicine': 'Stanford University',
+    'Boston University School of Medicine': 'Boston University',
+    'University of California Los Angeles': 'UCLA',
+    'University of California-Irvine': 'UC Irvine',
+    'University of California San Francisco': 'UCSF',
+    'Johns Hopkins University School of Medicine': 'Johns Hopkins University',
+    'Mayo Clinic College of Medicine': 'Mayo Clinic',
+    'Mayo Clinic School of Medicine': 'Mayo Clinic',
+    'Mayo Clinic Rochester': 'Mayo Clinic',
+    'Perelman School of Medicine': 'University of Pennsylvania',
+    'Penn Medicine': 'University of Pennsylvania',
+    'RWTH Aachen': 'RWTH Aachen University',
+    'Nuffield Department of Clinical Neurosciences': 'University of Oxford',
+    'Veterans Affairs Hospital': 'VA Connecticut Healthcare System',
+    'Veterans Affairs Medical Center': 'VA Connecticut Healthcare System',
+    'Veterans Affairs Connecticut Healthcare System': 'VA Connecticut Healthcare System',
+    'Rehabilitation Research Center': 'VA Connecticut Healthcare System',
+    'Rehabilitation Research': 'VA Connecticut Healthcare System',
+    'Neuroscience and Regeneration Research': 'Yale University',
+    'Restoration of Nervous System Function': 'VA Connecticut Healthcare System',
+    'Astra-Zeneca': 'AstraZeneca',
+    'Maastricht University Medical Center': 'Maastricht University',
+    'Oslo University Hospital': 'University of Oslo',
+    'Friedrich-Alexander-University': 'Friedrich-Alexander-Universität Erlangen-Nürnberg',
+    'Friedrich-Alexander Universität': 'Friedrich-Alexander-Universität Erlangen-Nürnberg',
+    'University of Washington School of Medicine': 'University of Washington',
+    'Inha University School of Medicine': 'Inha University',
+    'Sun Yat-sen Memorial Hospital': 'Sun Yat-sen University',
+    'Peking University First Hospital': 'Peking University',
+    'Peking University Third Hospital': 'Peking University',
+  };
+
+  for (const [pattern, normalized] of Object.entries(normalizations)) {
+    if (institution.toLowerCase().includes(pattern.toLowerCase())) {
+      return normalized;
+    }
+  }
+
+  // Filter out generic department/specialty names that slipped through
+  const genericDepartments = /^(Pharmacology|Neurology|Dermatology|Pediatrics|Medicine|Surgery|Anaesthesia|Anesthesiology|Pathology|Neurobiology|Rheumatology|Rhumatologie|Clinical Genetics|Clinical Pharmacology|Clinical Neurophysiology|Clinical Neurosciences|Pharmaceutical Sciences|Physiology and Pathophysiology|Internal Medicine|Hematology|Gastroenterology|Cardiology|Oncology|Radiology|for Pharmaceutical Preparations|Clinical-Surgical|Diagnostic and Pediatric Science|Internal Medicine Department)$/i;
+
+  if (!institution || institution.length < 3 || genericDepartments.test(institution)) {
+    return '';
+  }
+
+  return institution;
+}
+
+// Extract year from pubDate and add to each paper
+const papersWithYears: PaperWithYear[] = papers.map((paper) => {
+  let year = null;
+  if (paper.pubDate) {
+    const match = paper.pubDate.match(/(\d{4})/);
+    year = match ? parseInt(match[1]) : null;
+  }
+  return { ...paper, year };
+});
+
+// Find year range
+const validYears = papersWithYears
+  .map(p => p.year)
+  .filter((y): y is number => typeof y === 'number' && y > 1900 && y <= 2030);
+const minYear = validYears.length > 0 ? Math.min(...validYears) : new Date().getFullYear();
+const maxYear = validYears.length > 0 ? Math.max(...validYears) : minYear;
+
+// Build researcher network from papers (will be rebuilt by year filter)
+function buildNetworkData(filteredPapers: PaperWithYear[]) {
+  const authorStats = new Map<string, AuthorStat>();
+  const coauthors = new Map<string, number>();
+  const institutionCounts = new Map<string, number>();
+  const locations = new Map<string, number>();
+
+  filteredPapers.forEach(paper => {
+    const paperAuthors = paper.authors || [];
+
+  // Count publications per author
+  paperAuthors.forEach((authorData: string | PaperAuthor) => {
+    // Handle both old format (string) and new format (object)
+    const authorName = typeof authorData === 'string' ? authorData : authorData.name;
+    const affiliations = typeof authorData === 'object' ? (authorData.affiliations || []) : [];
+    const orcid = typeof authorData === 'object' ? authorData.orcid : '';
+
+    // Normalize author name to group variations
+    const normalizedName = normalizeAuthorName(authorName);
+
+    if (!authorStats.has(normalizedName)) {
+      authorStats.set(normalizedName, {
+        name: normalizedName,
+        originalNames: new Set([authorName]),
+        papers: [],
+        collaborators: new Set(),
+        institutions: new Set(),
+        locations: new Set(),
+        orcid: orcid || ''
+      });
+    }
+
+    const stats = authorStats.get(normalizedName)!;
+    stats.originalNames.add(authorName); // Track all name variations
+    stats.papers.push(paper.pmid);
+
+    // Update ORCID if found (keep longest/most complete one)
+    if (orcid && !stats.orcid) {
+      stats.orcid = orcid;
+    }
+
+    // Extract institutions and locations from affiliations
+    affiliations.forEach((affiliation: any) => {
+      // Normalize and track institution
+      const normalizedInst = normalizeInstitution(affiliation);
+      if (normalizedInst) {
+        stats.institutions.add(normalizedInst);
+        institutionCounts.set(normalizedInst, (institutionCounts.get(normalizedInst) || 0) + 1);
+      }
+
+      // Extract location (country only) using patterns
+      let location = null;
+
+      // US states to filter out
+      const usStates = new Set([
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+        'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
+        'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+        'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+        'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
+        'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
+        'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
+        'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+        'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
+        'West Virginia', 'Wisconsin', 'Wyoming', 'DC', 'District of Columbia'
+      ]);
+
+      // Pattern 1: Ends with 2-letter code (state/province), then country
+      // e.g., "..., PA, USA."
+      let match = affiliation.match(/,\s*[A-Z]{2}\s*,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\.?\s*$/);
+      if (match) {
+        location = match[1].trim();
+      } else {
+        // Pattern 2: Ends with country only
+        // e.g., "..., Brazil."
+        match = affiliation.match(/,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\.?\s*$/);
+        if (match) {
+          const candidate = match[1].trim();
+          // Only use if it's not a US state
+          if (!usStates.has(candidate)) {
+            location = candidate;
+          } else {
+            // If it's a US state, the country is USA
+            location = 'United States';
+          }
+        }
+      }
+
+      if (location) {
+        // Normalize common country variations
+        const countryMap: Record<string, string> = {
+          'USA': 'United States',
+          'UK': 'United Kingdom',
+          'P.R. China': 'China',
+          'PR China': 'China',
+          "People's Republic of China": 'China',
+          'The Netherlands': 'Netherlands',
+        };
+
+        location = countryMap[location] || location;
+
+        stats.locations.add(location);
+        locations.set(location, (locations.get(location) || 0) + 1);
+      }
+    });
+  });
+
+  // Track co-author relationships
+  for (let i = 0; i < paperAuthors.length; i++) {
+    for (let j = i + 1; j < paperAuthors.length; j++) {
+      const author1Data = paperAuthors[i];
+      const author2Data = paperAuthors[j];
+      const name1 = typeof author1Data === 'string' ? author1Data : author1Data.name;
+      const name2 = typeof author2Data === 'string' ? author2Data : author2Data.name;
+
+      // Use normalized names for tracking relationships
+      const author1 = normalizeAuthorName(name1);
+      const author2 = normalizeAuthorName(name2);
+
+      // Skip if same author (after normalization)
+      if (author1 === author2) continue;
+
+      const pair = [author1, author2].sort().join('|||');
+
+      coauthors.set(pair, (coauthors.get(pair) || 0) + 1);
+
+      authorStats.get(author1)?.collaborators.add(author2);
+      authorStats.get(author2)?.collaborators.add(author1);
+    }
+  }
+  });
+
+  // Enrich with OpenAlex institution data
+  authors.forEach(author => {
+    author.variants.forEach((variant: string) => {
+      const normalized = normalizeAuthorName(variant);
+      const stats = authorStats.get(normalized);
+
+      if (stats && author.currentAffiliation) {
+        // Add OpenAlex current affiliation if not already present
+        stats.institutions.add(author.currentAffiliation);
+      }
+    });
+  });
+
+  // Convert to arrays for sorting
+  const researchers: ResearcherSummary[] = Array.from(authorStats.values())
+    .map(r => ({
+      name: r.name,
+      publications: r.papers.length,
+      collaborators: r.collaborators.size,
+      papers: r.papers,
+      institutions: Array.from(r.institutions),
+      locations: Array.from(r.locations),
+      orcid: r.orcid,
+      originalNames: Array.from(r.originalNames || [r.name])
+    }))
+    .sort((a, b) => b.publications - a.publications);
+
+  // Top institutions
+  const topInstitutions = Array.from(institutionCounts.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20);
+
+  // Top locations
+  const topLocations = Array.from(locations.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // Build RESEARCHER network data
+  const topResearchers = researchers.slice(0, 50); // Top 50 for cleaner visualization
+  const topNames = new Set(topResearchers.map(r => r.name));
+
+  // Dynamic color palette for institutions (based on rank) - colorblind-friendly, distinct colors
+  const colorPalette = ['#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#d97706', '#a855f7'];
+  const institutionColors: Record<string, string> = {};
+  topInstitutions.forEach((inst, idx) => {
+    institutionColors[inst.name] = colorPalette[idx % colorPalette.length];
+  });
+
+  const researcherNodes = topResearchers.map((r, idx) => {
+    const primaryInst = r.institutions[0] || '';
+    const color = institutionColors[primaryInst] || '#4b5563';
+
+    return {
+      id: idx,
+      label: r.name,
+      value: r.publications,
+      title: `${r.name}\n${r.publications} papers\n${r.collaborators} collaborators${primaryInst ? '\n' + primaryInst : ''}`,
+      color: {
+        background: color,
+        border: color,
+        highlight: {
+          background: color,
+          border: '#1f2937'
+        }
+      }
+    };
+  });
+
+  const researcherEdges: any[] = [];
+  coauthors.forEach((count, pair) => {
+    const [author1, author2] = pair.split('|||');
+    if (topNames.has(author1) && topNames.has(author2)) {
+      const id1 = topResearchers.findIndex(r => r.name === author1);
+      const id2 = topResearchers.findIndex(r => r.name === author2);
+      researcherEdges.push({
+        from: id1,
+        to: id2,
+        value: count,
+        title: `${count} collaboration${count > 1 ? 's' : ''}`
+      });
+    }
+  });
+
+  // Build INSTITUTION network data
+  const institutionCollabs = new Map();
+
+  // Track which institutions collaborate (share researchers)
+  filteredPapers.forEach(paper => {
+    const paperAuthors = paper.authors || [];
+    const paperInstitutions = new Set<string>();
+
+    // Get all institutions from this paper
+    paperAuthors.forEach((authorData: string | PaperAuthor) => {
+      const affiliations = typeof authorData === 'object' ? (authorData.affiliations || []) : [];
+      affiliations.forEach((affiliation: string) => {
+        const inst = normalizeInstitution(affiliation);
+        if (inst) paperInstitutions.add(inst);
+      });
+    });
+
+    // Create edges between institutions that appear on same paper
+  const instArray = Array.from(paperInstitutions);
+    for (let i = 0; i < instArray.length; i++) {
+      for (let j = i + 1; j < instArray.length; j++) {
+        const pair = [instArray[i], instArray[j]].sort().join('|||');
+        institutionCollabs.set(pair, (institutionCollabs.get(pair) || 0) + 1);
+      }
+    }
+  });
+
+  // Take top 40 institutions for network
+  const topInsts = topInstitutions.slice(0, 40);
+  const topInstNames = new Set(topInsts.map(i => i.name));
+
+  const institutionNodes = topInsts.map((inst, idx) => ({
+    id: idx,
+    label: inst.name,
+    value: inst.count,
+    title: `${inst.name}\n${inst.count} publication${inst.count > 1 ? 's' : ''}`
+  }));
+
+  const institutionEdges: any[] = [];
+  institutionCollabs.forEach((count, pair) => {
+    const [inst1, inst2] = pair.split('|||');
+    if (topInstNames.has(inst1) && topInstNames.has(inst2)) {
+      const id1 = topInsts.findIndex(i => i.name === inst1);
+      const id2 = topInsts.findIndex(i => i.name === inst2);
+      institutionEdges.push({
+        from: id1,
+        to: id2,
+        value: count,
+        title: `${count} shared publication${count > 1 ? 's' : ''}`
+      });
+    }
+  });
+
+  return {
+    researchers,
+    topInstitutions,
+    topLocations,
+    coauthors,
+    researcherNetworkData: { nodes: researcherNodes, edges: researcherEdges },
+    institutionNetworkData: { nodes: institutionNodes, edges: institutionEdges }
+  };
+}
+
+// Build initial network with all papers
+const initialData = buildNetworkData(papersWithYears);
+const researchers = initialData.researchers;
+const topInstitutions = initialData.topInstitutions;
+const coauthors = initialData.coauthors;
+
+// Dynamic color palette for institutions (for legend)
+const colorPalette = ['#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#d97706', '#a855f7'];
+const institutionColorMap: Record<string, string> = {};
+topInstitutions.forEach((inst, idx) => {
+  institutionColorMap[inst.name] = colorPalette[idx % colorPalette.length];
+});
+
+const legendItems = topInstitutions.slice(0, 9).map(inst => ({
+  name: inst.name.length > 30 ? inst.name.substring(0, 30) + '...' : inst.name,
+  color: institutionColorMap[inst.name]
+}));
+
+// Create lookup map from normalized name to author profile
+const authorLookup = new Map<string, string>();
+authors.forEach((author) => {
+  author.variants.forEach((variant) => {
+    const normalized = normalizeAuthorName(variant);
+    if (!authorLookup.has(normalized)) {
+      authorLookup.set(normalized, author.id);
+    }
+  });
+});
+
+// Create lookup map from institution name to institution ID
+const institutionLookup = new Map<string, string>();
+institutions.forEach((inst) => {
+  // Map both the exact name and normalized name
+  institutionLookup.set(inst.name, inst.id);
+  const normalized = normalizeInstitution(inst.name);
+  if (normalized && normalized !== inst.name) {
+    institutionLookup.set(normalized, inst.id);
+  }
+});
+
+const serializedAuthors = JSON.stringify(authors).replace(/</g, '\\u003c');
+---
+
+<MainLayout
+  title={`Researcher Network | ${conditionDisplayName}`}
+  description={`Interactive network of ${conditionDisplayName} researchers and their collaborations`}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Researcher Network</h1>
+      <p class="text-lg text-gray-600">
+        Explore the collaborative network of {researchers.length} researchers studying {conditionDisplayName}
+      </p>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="mb-12">
+      <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">All-Time Statistics ({minYear}–{maxYear})</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg shadow-md p-6 border border-blue-200">
+          <div class="text-3xl font-bold text-indigo-700">{researchers.length}</div>
+          <div class="text-sm text-indigo-600 font-medium">Total Researchers</div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-50 to-pink-100 rounded-lg shadow-md p-6 border border-purple-200">
+          <div class="text-3xl font-bold text-purple-700">{papers.length}</div>
+          <div class="text-sm text-purple-600 font-medium">Publications</div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg shadow-md p-6 border border-green-200">
+          <div class="text-3xl font-bold text-emerald-700">{coauthors.size}</div>
+          <div class="text-sm text-emerald-600 font-medium">Collaborations</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Geographic Distribution -->
+    <div class="bg-gradient-to-br from-white to-teal-50 rounded-lg shadow-md p-6 mb-12 border border-teal-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Geographic Distribution Over Time</h2>
+      <p class="text-gray-600 mb-4">
+        Watch how {conditionDisplayName} research has spread globally
+      </p>
+
+      <!-- Year Controls for Map -->
+      <div class="mb-6 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-sm font-medium text-gray-700">Show Publications Through Year</label>
+          <span id="map-year-display" class="text-sm font-semibold text-primary-600">All years</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            id="map-play-button"
+            class="px-3 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors"
+            title="Watch research spread over time from 2000"
+          >
+            ▶ Play
+          </button>
+          <span class="text-xs text-gray-500" id="map-min-year">{minYear}</span>
+          <input
+            type="range"
+            id="map-year-slider"
+            min={minYear}
+            max={maxYear}
+            value={maxYear}
+            class="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+          />
+          <span class="text-xs text-gray-500" id="map-max-year">{maxYear}</span>
+          <button
+            id="map-reset-button"
+            class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:bg-gray-100"
+          >
+            Reset
+          </button>
+        </div>
+        <div id="map-paper-count" class="mt-2 text-xs text-gray-500"></div>
+      </div>
+
+      <div id="map" style="height: 500px; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></div>
+    </div>
+
+    <!-- Network Visualization -->
+    <div class="bg-white rounded-lg shadow p-6 mb-12">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-900">Collaboration Network</h2>
+
+        <!-- Toggle Switch -->
+        <div class="flex items-center gap-3 bg-gray-100 rounded-lg p-1">
+          <button
+            id="toggle-researchers"
+            class="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-primary-600 text-white"
+          >
+            Researchers
+          </button>
+          <button
+            id="toggle-institutions"
+            class="px-4 py-2 rounded-md text-sm font-medium transition-colors text-gray-600 hover:text-gray-900"
+          >
+            Institutions
+          </button>
+        </div>
+      </div>
+
+      <!-- Year Filter for Network -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-sm font-medium text-gray-700">Show Researchers Active From Year</label>
+          <span id="network-year-display" class="text-sm font-semibold text-primary-600">All years</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            id="network-play-button"
+            class="px-3 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors"
+            title="Play timeline animation"
+          >
+            ▶ Play
+          </button>
+          <span class="text-xs text-gray-500">{minYear}</span>
+          <input
+            type="range"
+            id="network-year-slider"
+            min={minYear}
+            max={maxYear}
+            value={minYear}
+            class="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+          />
+          <span class="text-xs text-gray-500">{maxYear}</span>
+          <button
+            id="network-reset-button"
+            class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:bg-gray-100"
+          >
+            Reset
+          </button>
+        </div>
+        <div id="network-paper-count" class="mt-2 text-xs text-gray-500"></div>
+      </div>
+
+      <p id="network-description" class="text-gray-600 mb-4">
+        Top 50 researchers by publication count. Node size = publications, edge thickness = collaborations. Colors indicate institutional affiliation.
+      </p>
+
+      <!-- Legend for researcher network -->
+      <div id="researcher-legend" class="mb-6 flex flex-wrap gap-3">
+        {legendItems.map((item) => (
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full" style={`background-color: ${item.color};`}></div>
+            <span class="text-xs text-gray-600">{item.name}</span>
+          </div>
+        ))}
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 rounded-full" style="background-color: #4b5563;"></div>
+          <span class="text-xs text-gray-600">Other</span>
+        </div>
+      </div>
+
+      <div id="network" style="height: 600px; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></div>
+    </div>
+
+    <!-- Top Researchers Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-900">Top Researchers (All Time)</h2>
+        <p class="text-sm text-gray-600 mt-1">Ranked by total publications from {minYear} to {maxYear}</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Researcher</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publications</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Affiliations</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {researchers.slice(0, 100).map((researcher, idx) => (
+              <tr class="hover:bg-gray-50 align-top">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {idx + 1}
+                </td>
+                <td class="px-6 py-4 text-sm font-medium text-gray-900 whitespace-normal break-words">
+                  <div class="flex items-center gap-2">
+                    {authorLookup.has(researcher.name) ? (
+                      <a
+                        href={`${base}researchers/${authorLookup.get(researcher.name)!.replace('https://openalex.org/', '')}/`}
+                        class="text-primary-600 hover:text-primary-800 hover:underline"
+                      >
+                        {researcher.name}
+                      </a>
+                    ) : (
+                      <span>{researcher.name}</span>
+                    )}
+                    {researcher.orcid && (
+                      <a
+                        href={`https://orcid.org/${researcher.orcid}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-xs text-gray-500 hover:text-primary-600"
+                        title="ORCID Profile"
+                      >
+                        🔗
+                      </a>
+                    )}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {researcher.publications}
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600 whitespace-normal break-words max-w-md">
+                  {researcher.institutions.length > 0 ? (
+                    <div title={researcher.institutions.join('; ')}>
+                      {researcher.institutions[0]}
+                      {researcher.institutions.length > 1 && (
+                        <span class="text-gray-400"> +{researcher.institutions.length - 1}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <span class="text-gray-400">—</span>
+                  )}
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600 whitespace-normal break-words">
+                  {researcher.locations.length > 0 ? researcher.locations.join(', ') : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet CSS for map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- vis-network for interactive graph -->
+  <script is:inline src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+  <!-- Leaflet JS for map -->
+  <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Map initialization -->
+  <script is:inline>
+    // Map will be initialized and updated by the Network visualization script
+  </script>
+
+  <script
+    id="authors-data"
+    type="application/json"
+    is:inline
+    set:html={serializedAuthors}
+  ></script>
+
+  <!-- Network visualization -->
+  <script is:inline define:vars={{ papersWithYears, minYear, maxYear }}>
+    document.addEventListener('DOMContentLoaded', function() {
+      const authorsDataElement = document.getElementById('authors-data');
+      const authorsData = authorsDataElement ? JSON.parse(authorsDataElement.textContent || '[]') : [];
+
+      // Get primary color from Bootstrap CSS
+      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary') || '#0d6efd';
+
+      const container = document.getElementById('network');
+      const description = document.getElementById('network-description');
+      const legend = document.getElementById('researcher-legend');
+      const toggleResearchers = document.getElementById('toggle-researchers');
+      const toggleInstitutions = document.getElementById('toggle-institutions');
+
+      // Map controls
+      const mapYearSlider = document.getElementById('map-year-slider');
+      const mapYearDisplay = document.getElementById('map-year-display');
+      const mapPaperCount = document.getElementById('map-paper-count');
+      const mapResetButton = document.getElementById('map-reset-button');
+      const mapPlayButton = document.getElementById('map-play-button');
+
+      // Network controls
+      const networkYearSlider = document.getElementById('network-year-slider');
+      const networkYearDisplay = document.getElementById('network-year-display');
+      const networkPaperCount = document.getElementById('network-paper-count');
+      const networkResetButton = document.getElementById('network-reset-button');
+      const networkPlayButton = document.getElementById('network-play-button');
+
+      let network = null;
+      let currentMode = 'researchers';
+      let currentResearcherData = null;
+      let currentInstitutionData = null;
+
+      // Separate state for map and network
+      let mapIsPlaying = false;
+      let mapPlayInterval = null;
+      let networkIsPlaying = false;
+      let networkPlayInterval = null;
+
+      let map = null;
+      let mapMarkers = [];
+
+      // Client-side normalization functions
+      function normalizeAuthorName(name) {
+        if (!name) return '';
+        const parts = name.trim().split(/\s+/);
+        if (parts.length < 2) return name;
+        const lastName = parts[0];
+        const initials = parts.slice(1).join('');
+        const cleanInitials = initials.replace(/[.\s]/g, '');
+        const firstInitial = cleanInitials.charAt(0);
+        return `${lastName} ${firstInitial}`;
+      }
+
+      function normalizeInstitution(affiliation) {
+        if (!affiliation) return '';
+
+        let cleaned = affiliation.replace(/Electronic address:.*$/i, '').trim();
+        const parts = cleaned.split(',').map(p => p.trim());
+        const genericTerms = /^(Department of|Division of|Section of|Unit of|Laboratory of|Lab of|Institute of|Center for|Centre for|Rehabilitation Research Center|Research Center|Clinical Research|School of|EA \d+|Service de|Département de|Klinik für|Servicio de)\s+/i;
+
+        let institution = '';
+        let candidates = [];
+
+        for (let i = 0; i < Math.min(4, parts.length); i++) {
+          const part = parts[i];
+          if (/University|Universit[éèa]|Hospital|Medical Center|Medical Centre|Pharmaceuticals|Pharma|College|Clinic|Klinik|Academy of Sciences/i.test(part)) {
+            candidates.push({ part, priority: 10, index: i });
+          } else if (/Institute|Institut|Centro|Center|Centre/i.test(part)) {
+            const hasProperNoun = /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(Institute|Institut|Center|Centre)\b/.test(part);
+            if (hasProperNoun) {
+              candidates.push({ part, priority: 5, index: i });
+            }
+          }
+        }
+
+        if (candidates.length > 0) {
+          candidates.sort((a, b) => b.priority - a.priority || a.index - b.index);
+          institution = candidates[0].part;
+        } else if (parts.length > 0) {
+          institution = parts[0];
+        }
+
+        institution = institution
+          .replace(genericTerms, '')
+          .replace(/\(.*?\)/g, '')
+          .replace(/\s+/g, ' ')
+          .replace(/[,;].*$/, '')
+          .trim();
+
+        const normalizations = {
+          'Xenon Pharmaceuticals Inc': 'Xenon Pharmaceuticals',
+          'Genentech Inc.': 'Genentech',
+          'Yale School of Medicine': 'Yale University',
+          'Yale University School of Medicine': 'Yale University',
+          'Harvard Medical School': 'Harvard University',
+          'Stanford University School of Medicine': 'Stanford University',
+          'Boston University School of Medicine': 'Boston University',
+          'University of California Los Angeles': 'UCLA',
+          'University of California-Irvine': 'UC Irvine',
+          'University of California San Francisco': 'UCSF',
+          'Johns Hopkins University School of Medicine': 'Johns Hopkins University',
+          'Mayo Clinic College of Medicine': 'Mayo Clinic',
+          'Mayo Clinic School of Medicine': 'Mayo Clinic',
+          'Mayo Clinic Rochester': 'Mayo Clinic',
+          'Perelman School of Medicine': 'University of Pennsylvania',
+          'Penn Medicine': 'University of Pennsylvania',
+          'RWTH Aachen': 'RWTH Aachen University',
+          'Nuffield Department of Clinical Neurosciences': 'University of Oxford',
+          'Veterans Affairs Hospital': 'VA Connecticut Healthcare System',
+          'Veterans Affairs Medical Center': 'VA Connecticut Healthcare System',
+          'Veterans Affairs Connecticut Healthcare System': 'VA Connecticut Healthcare System',
+          'Rehabilitation Research Center': 'VA Connecticut Healthcare System',
+          'Rehabilitation Research': 'VA Connecticut Healthcare System',
+          'Neuroscience and Regeneration Research': 'Yale University',
+          'Restoration of Nervous System Function': 'VA Connecticut Healthcare System',
+          'Astra-Zeneca': 'AstraZeneca',
+          'Maastricht University Medical Center': 'Maastricht University',
+          'Oslo University Hospital': 'University of Oslo',
+          'Friedrich-Alexander-University': 'Friedrich-Alexander-Universität Erlangen-Nürnberg',
+          'Friedrich-Alexander Universität': 'Friedrich-Alexander-Universität Erlangen-Nürnberg',
+          'University of Washington School of Medicine': 'University of Washington',
+          'Inha University School of Medicine': 'Inha University',
+          'Sun Yat-sen Memorial Hospital': 'Sun Yat-sen University',
+          'Peking University First Hospital': 'Peking University',
+          'Peking University Third Hospital': 'Peking University',
+        };
+
+        for (const [pattern, normalized] of Object.entries(normalizations)) {
+          if (institution.toLowerCase().includes(pattern.toLowerCase())) {
+            return normalized;
+          }
+        }
+
+        const genericDepartments = /^(Pharmacology|Neurology|Dermatology|Pediatrics|Medicine|Surgery|Anaesthesia|Anesthesiology|Pathology|Neurobiology|Rheumatology|Rhumatologie|Clinical Genetics|Clinical Pharmacology|Clinical Neurophysiology|Clinical Neurosciences|Pharmaceutical Sciences|Physiology and Pathophysiology|Internal Medicine|Hematology|Gastroenterology|Cardiology|Oncology|Radiology|for Pharmaceutical Preparations|Clinical-Surgical|Diagnostic and Pediatric Science|Internal Medicine Department)$/i;
+
+        if (!institution || institution.length < 3 || genericDepartments.test(institution)) {
+          return '';
+        }
+
+        return institution;
+      }
+
+      // Build network data from filtered papers
+      function buildNetworkData(filteredPapers) {
+        const authorStats = new Map();
+        const coauthors = new Map();
+        const institutions = new Map();
+
+        filteredPapers.forEach(paper => {
+          const authors = paper.authors || [];
+
+          authors.forEach(authorData => {
+            const authorName = typeof authorData === 'string' ? authorData : authorData.name;
+            const affiliations = typeof authorData === 'object' ? (authorData.affiliations || []) : [];
+            const orcid = typeof authorData === 'object' ? authorData.orcid : '';
+
+            const normalizedName = normalizeAuthorName(authorName);
+
+            if (!authorStats.has(normalizedName)) {
+              authorStats.set(normalizedName, {
+                name: normalizedName,
+                originalNames: new Set([authorName]),
+                papers: [],
+                collaborators: new Set(),
+                institutions: new Set(),
+                orcid: orcid || ''
+              });
+            }
+
+            const stats = authorStats.get(normalizedName);
+            stats.originalNames.add(authorName);
+            stats.papers.push(paper.pmid);
+
+            if (orcid && !stats.orcid) {
+              stats.orcid = orcid;
+            }
+
+            affiliations.forEach(affiliation => {
+              const normalizedInst = normalizeInstitution(affiliation);
+              if (normalizedInst) {
+                stats.institutions.add(normalizedInst);
+                institutions.set(normalizedInst, (institutions.get(normalizedInst) || 0) + 1);
+              }
+            });
+          });
+
+          // Track co-author relationships
+          for (let i = 0; i < authors.length; i++) {
+            for (let j = i + 1; j < authors.length; j++) {
+              const name1 = typeof authors[i] === 'string' ? authors[i] : authors[i].name;
+              const name2 = typeof authors[j] === 'string' ? authors[j] : authors[j].name;
+
+              const author1 = normalizeAuthorName(name1);
+              const author2 = normalizeAuthorName(name2);
+
+              if (author1 === author2) continue;
+
+              const pair = [author1, author2].sort().join('|||');
+              coauthors.set(pair, (coauthors.get(pair) || 0) + 1);
+
+              authorStats.get(author1).collaborators.add(author2);
+              authorStats.get(author2).collaborators.add(author1);
+            }
+          }
+        });
+
+        // Enrich with OpenAlex institution data
+        authorsData.forEach(author => {
+          author.variants.forEach(variant => {
+            const normalized = normalizeAuthorName(variant);
+            const stats = authorStats.get(normalized);
+
+            if (stats && author.currentAffiliation) {
+              stats.institutions.add(author.currentAffiliation);
+            }
+          });
+        });
+
+        const researchers = Array.from(authorStats.values())
+          .map(r => ({
+            name: r.name,
+            publications: r.papers.length,
+            collaborators: r.collaborators.size,
+            papers: r.papers,
+            institutions: Array.from(r.institutions),
+            orcid: r.orcid
+          }))
+          .sort((a, b) => b.publications - a.publications);
+
+        const topInstitutions = Array.from(institutions.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 20);
+
+        // Build researcher network
+        const topResearchers = researchers.slice(0, 50);
+        const topNames = new Set(topResearchers.map(r => r.name));
+
+        // Dynamic color palette for institutions (based on rank) - colorblind-friendly, distinct colors
+        const colorPalette = ['#0d9488', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#d97706', '#a855f7'];
+        const institutionColors = {};
+        topInstitutions.forEach((inst, idx) => {
+          institutionColors[inst.name] = colorPalette[idx % colorPalette.length];
+        });
+
+        const researcherNodes = topResearchers.map((r, idx) => {
+          const primaryInst = r.institutions[0] || '';
+          const color = institutionColors[primaryInst] || '#4b5563';
+
+          return {
+            id: idx,
+            label: r.name,
+            value: r.publications,
+            title: `${r.name}\n${r.publications} papers\n${r.collaborators} collaborators${primaryInst ? '\n' + primaryInst : ''}`,
+            color: {
+              background: color,
+              border: color,
+              highlight: { background: color, border: '#1f2937' }
+            }
+          };
+        });
+
+        const researcherEdges = [];
+        coauthors.forEach((count, pair) => {
+          const [author1, author2] = pair.split('|||');
+          if (topNames.has(author1) && topNames.has(author2)) {
+            const id1 = topResearchers.findIndex(r => r.name === author1);
+            const id2 = topResearchers.findIndex(r => r.name === author2);
+            researcherEdges.push({
+              from: id1,
+              to: id2,
+              value: count,
+              title: `${count} collaboration${count > 1 ? 's' : ''}`
+            });
+          }
+        });
+
+        // Build institution network
+        const institutionCollabs = new Map();
+        filteredPapers.forEach(paper => {
+          const authors = paper.authors || [];
+          const paperInstitutions = new Set();
+
+          authors.forEach(authorData => {
+            const affiliations = typeof authorData === 'object' ? (authorData.affiliations || []) : [];
+            affiliations.forEach(affiliation => {
+              const inst = normalizeInstitution(affiliation);
+              if (inst) paperInstitutions.add(inst);
+            });
+          });
+
+          const instArray = Array.from(paperInstitutions);
+          for (let i = 0; i < instArray.length; i++) {
+            for (let j = i + 1; j < instArray.length; j++) {
+              const pair = [instArray[i], instArray[j]].sort().join('|||');
+              institutionCollabs.set(pair, (institutionCollabs.get(pair) || 0) + 1);
+            }
+          }
+        });
+
+        const topInsts = topInstitutions.slice(0, 40);
+        const topInstNames = new Set(topInsts.map(i => i.name));
+
+        const institutionNodes = topInsts.map((inst, idx) => ({
+          id: idx,
+          label: inst.name,
+          value: inst.count,
+          title: `${inst.name}\n${inst.count} publication${inst.count > 1 ? 's' : ''}`
+        }));
+
+        const institutionEdges = [];
+        institutionCollabs.forEach((count, pair) => {
+          const [inst1, inst2] = pair.split('|||');
+          if (topInstNames.has(inst1) && topInstNames.has(inst2)) {
+            const id1 = topInsts.findIndex(i => i.name === inst1);
+            const id2 = topInsts.findIndex(i => i.name === inst2);
+            institutionEdges.push({
+              from: id1,
+              to: id2,
+              value: count,
+              title: `${count} shared publication${count > 1 ? 's' : ''}`
+            });
+          }
+        });
+
+        return {
+          researcherNetworkData: { nodes: researcherNodes, edges: researcherEdges },
+          institutionNetworkData: { nodes: institutionNodes, edges: institutionEdges }
+        };
+      }
+
+      // Map functions and data
+      const countryCoords = {
+        'United States': [37.0902, -95.7129],
+        'USA': [37.0902, -95.7129],
+        'China': [35.8617, 104.1954],
+        'Japan': [36.2048, 138.2529],
+        'United Kingdom': [55.3781, -3.4360],
+        'UK': [55.3781, -3.4360],
+        'Germany': [51.1657, 10.4515],
+        'France': [46.2276, 2.2137],
+        'Italy': [41.8719, 12.5674],
+        'Spain': [40.4637, -3.7492],
+        'Canada': [56.1304, -106.3468],
+        'Australia': [-25.2744, 133.7751],
+        'Netherlands': [52.1326, 5.2913],
+        'Switzerland': [46.8182, 8.2275],
+        'Sweden': [60.1282, 18.6435],
+        'Norway': [60.4720, 8.4689],
+        'Denmark': [56.2639, 9.5018],
+        'Belgium': [50.5039, 4.4699],
+        'Austria': [47.5162, 14.5501],
+        'South Korea': [35.9078, 127.7669],
+        'Korea': [35.9078, 127.7669],
+        'Taiwan': [23.6978, 120.9605],
+        'India': [20.5937, 78.9629],
+        'Brazil': [-14.2350, -51.9253],
+        'Mexico': [23.6345, -102.5528],
+        'Argentina': [-38.4161, -63.6167],
+        'Israel': [31.0461, 34.8516],
+        'Turkey': [38.9637, 35.2433],
+        'Poland': [51.9194, 19.1451],
+        'Czech Republic': [49.8175, 15.4730],
+        'Czechia': [49.8175, 15.4730],
+        'Ireland': [53.4129, -8.2439],
+        'New Zealand': [-40.9006, 174.8860],
+        'Singapore': [1.3521, 103.8198],
+        'Finland': [61.9241, 25.7482],
+        'Greece': [39.0742, 21.8243],
+        'Portugal': [39.3999, -8.2245],
+        'Russia': [61.5240, 105.3188],
+        'South Africa': [-30.5595, 22.9375],
+        'Egypt': [26.8206, 30.8025],
+        'Iran': [32.4279, 53.6880],
+        'Thailand': [15.8700, 100.9925],
+        'Vietnam': [14.0583, 108.2772],
+        'Pakistan': [30.3753, 69.3451],
+        'Saudi Arabia': [23.8859, 45.0792],
+        'Chile': [-35.6751, -71.5430],
+        'Colombia': [4.5709, -74.2973],
+        'Romania': [45.9432, 24.9668],
+        'Hungary': [47.1625, 19.5033],
+        'Croatia': [45.1, 15.2]
+      };
+
+      function extractLocationsFromPapers(papers) {
+        const locations = new Map();
+        const usStates = new Set([
+          'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+          'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
+          'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+          'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+          'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
+          'New Hampshire', 'New Jersey', 'New Mexico', 'New York',
+          'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon',
+          'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+          'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
+          'West Virginia', 'Wisconsin', 'Wyoming', 'DC', 'District of Columbia'
+        ]);
+
+        papers.forEach(paper => {
+          const authors = paper.authors || [];
+          authors.forEach(authorData => {
+            const affiliations = typeof authorData === 'object' ? (authorData.affiliations || []) : [];
+            affiliations.forEach(affiliation => {
+              let location = null;
+              let match = affiliation.match(/,\s*[A-Z]{2}\s*,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\.?\s*$/);
+              if (match) {
+                location = match[1].trim();
+              } else {
+                match = affiliation.match(/,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\.?\s*$/);
+                if (match) {
+                  const candidate = match[1].trim();
+                  if (!usStates.has(candidate)) {
+                    location = candidate;
+                  } else {
+                    location = 'United States';
+                  }
+                }
+              }
+
+              if (location) {
+                const countryMap = {
+                  'USA': 'United States',
+                  'UK': 'United Kingdom',
+                  'P.R. China': 'China',
+                  'PR China': 'China',
+                  "People's Republic of China": 'China',
+                  'The Netherlands': 'Netherlands',
+                };
+                location = countryMap[location] || location;
+                locations.set(location, (locations.get(location) || 0) + 1);
+              }
+            });
+          });
+        });
+
+        return Array.from(locations.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count);
+      }
+
+      function initMap() {
+        if (!map) {
+          map = L.map('map').setView([20, 0], 2);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18
+          }).addTo(map);
+        }
+      }
+
+      function updateMap(filteredPapers) {
+        // Clear existing markers
+        mapMarkers.forEach(marker => marker.remove());
+        mapMarkers = [];
+
+        // Extract locations from filtered papers
+        const topLocations = extractLocationsFromPapers(filteredPapers);
+
+        // Add new markers
+        topLocations.forEach(loc => {
+          const coords = countryCoords[loc.name];
+          if (coords) {
+            const radius = Math.sqrt(loc.count) * 3;
+            const marker = L.circleMarker(coords, {
+              radius: radius,
+              fillColor: primaryColor,
+              color: primaryColor,
+              weight: 2,
+              opacity: 0.8,
+              fillOpacity: 0.5
+            })
+            .bindPopup(`<strong>${loc.name}</strong><br>${loc.count} publication${loc.count > 1 ? 's' : ''}`)
+            .addTo(map);
+            mapMarkers.push(marker);
+          }
+        });
+      }
+
+      const options = {
+        nodes: {
+          shape: 'dot',
+          scaling: {
+            min: 10,
+            max: 40,
+            label: {
+              enabled: true,
+              min: 32,
+              max: 40
+            }
+          },
+          font: {
+            size: 32,
+            color: '#1f2937',
+            face: 'system-ui, -apple-system, sans-serif',
+            strokeWidth: 4,
+            strokeColor: '#ffffff',
+            bold: true
+          }
+        },
+        edges: {
+          color: {
+            color: '#d1d5db',
+            highlight: '#9ca3af'
+          },
+          width: 1,
+          scaling: {
+            min: 1,
+            max: 5
+          },
+          smooth: {
+            type: 'continuous'
+          }
+        },
+        physics: {
+          forceAtlas2Based: {
+            gravitationalConstant: -50,
+            centralGravity: 0.001,
+            springLength: 300,
+            springConstant: 0.12
+          },
+          maxVelocity: 146,
+          solver: 'forceAtlas2Based',
+          timestep: 0.35,
+          stabilization: {
+            enabled: true,
+            iterations: 200
+          }
+        },
+        interaction: {
+          hover: true,
+          tooltipDelay: 200,
+          navigationButtons: true,
+          keyboard: true
+        }
+      };
+
+      function initNetwork(data) {
+        if (network) {
+          network.destroy();
+        }
+        network = new vis.Network(container, data, options);
+
+        network.on('stabilizationProgress', function(params) {
+          const progress = Math.round((params.iterations / params.total) * 100);
+          console.log('Loading network: ' + progress + '%');
+        });
+
+        network.on('stabilizationIterationsDone', function() {
+          console.log('Network visualization ready');
+        });
+      }
+
+      // Map year filter handler
+      function updateMapYearFilter() {
+        const selectedYear = parseInt(mapYearSlider.value);
+
+        // Cumulative: show all papers UP TO selected year
+        const filteredPapers = papersWithYears.filter(p =>
+          p.year && p.year <= selectedYear
+        );
+
+        if (selectedYear === maxYear) {
+          mapYearDisplay.textContent = `${minYear}–${maxYear} (all time)`;
+        } else {
+          mapYearDisplay.textContent = `${minYear}–${selectedYear}`;
+        }
+        mapPaperCount.textContent = `${filteredPapers.length} papers through ${selectedYear}`;
+
+        updateMap(filteredPapers);
+      }
+
+      // Network year filter handler
+      function updateNetworkYearFilter() {
+        const selectedYear = parseInt(networkYearSlider.value);
+
+        const filteredPapers = papersWithYears.filter(p =>
+          p.year && p.year >= selectedYear
+        );
+
+        if (selectedYear === minYear) {
+          networkYearDisplay.textContent = `All years (${minYear}–${maxYear})`;
+        } else {
+          networkYearDisplay.textContent = `${selectedYear}–${maxYear}`;
+        }
+        networkPaperCount.textContent = `${filteredPapers.length} papers from ${selectedYear} onwards`;
+
+        const networkData = buildNetworkData(filteredPapers);
+        currentResearcherData = networkData.researcherNetworkData;
+        currentInstitutionData = networkData.institutionNetworkData;
+
+        if (currentMode === 'researchers') {
+          initNetwork(currentResearcherData);
+        } else {
+          initNetwork(currentInstitutionData);
+        }
+      }
+
+      // Map play/pause
+      function toggleMapPlay() {
+        if (mapIsPlaying) {
+          stopMapPlayback();
+        } else {
+          startMapPlayback();
+        }
+      }
+
+      function startMapPlayback() {
+        // Start from beginning if already at the end
+        if (parseInt(mapYearSlider.value) === maxYear) {
+          mapYearSlider.value = minYear;
+          updateMapYearFilter();
+        }
+
+        mapIsPlaying = true;
+        mapPlayButton.innerHTML = '⏸ Pause';
+        mapPlayButton.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+        mapPlayButton.classList.add('bg-gray-600', 'hover:bg-gray-700');
+
+        mapPlayInterval = setInterval(() => {
+          const currentYear = parseInt(mapYearSlider.value);
+          if (currentYear < maxYear) {
+            mapYearSlider.value = currentYear + 1;
+            updateMapYearFilter();
+          } else {
+            stopMapPlayback();
+          }
+        }, 500); // Faster animation - 500ms per year
+      }
+
+      function stopMapPlayback() {
+        mapIsPlaying = false;
+        mapPlayButton.innerHTML = '▶ Play';
+        mapPlayButton.classList.add('bg-primary-600', 'hover:bg-primary-700');
+        mapPlayButton.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+
+        if (mapPlayInterval) {
+          clearInterval(mapPlayInterval);
+          mapPlayInterval = null;
+        }
+      }
+
+      // Network play/pause
+      function toggleNetworkPlay() {
+        if (networkIsPlaying) {
+          stopNetworkPlayback();
+        } else {
+          startNetworkPlayback();
+        }
+      }
+
+      function startNetworkPlayback() {
+        networkIsPlaying = true;
+        networkPlayButton.innerHTML = '⏸ Pause';
+        networkPlayButton.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+        networkPlayButton.classList.add('bg-gray-600', 'hover:bg-gray-700');
+
+        networkPlayInterval = setInterval(() => {
+          const currentYear = parseInt(networkYearSlider.value);
+          if (currentYear < maxYear) {
+            networkYearSlider.value = currentYear + 1;
+            updateNetworkYearFilter();
+          } else {
+            stopNetworkPlayback();
+          }
+        }, 1000);
+      }
+
+      function stopNetworkPlayback() {
+        networkIsPlaying = false;
+        networkPlayButton.innerHTML = '▶ Play';
+        networkPlayButton.classList.add('bg-primary-600', 'hover:bg-primary-700');
+        networkPlayButton.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+
+        if (networkPlayInterval) {
+          clearInterval(networkPlayInterval);
+          networkPlayInterval = null;
+        }
+      }
+
+      function switchToResearchers() {
+        currentMode = 'researchers';
+        toggleResearchers.classList.add('bg-primary-600', 'text-white');
+        toggleResearchers.classList.remove('text-gray-600', 'hover:text-gray-900');
+        toggleInstitutions.classList.remove('bg-primary-600', 'text-white');
+        toggleInstitutions.classList.add('text-gray-600', 'hover:text-gray-900');
+        description.textContent = 'Top 50 researchers by publication count. Node size = publications, edge thickness = collaborations. Colors indicate institutional affiliation.';
+        legend.style.display = 'flex';
+        initNetwork(currentResearcherData);
+      }
+
+      function switchToInstitutions() {
+        currentMode = 'institutions';
+        toggleInstitutions.classList.add('bg-primary-600', 'text-white');
+        toggleInstitutions.classList.remove('text-gray-600', 'hover:text-gray-900');
+        toggleResearchers.classList.remove('bg-primary-600', 'text-white');
+        toggleResearchers.classList.add('text-gray-600', 'hover:text-gray-900');
+        description.textContent = 'Top 40 institutions by publication count. Node size = publications, edges = shared papers.';
+        legend.style.display = 'none';
+        initNetwork(currentInstitutionData);
+      }
+
+      // Map event listeners
+      mapYearSlider.addEventListener('input', () => {
+        if (mapIsPlaying) stopMapPlayback();
+        updateMapYearFilter();
+      });
+
+      mapResetButton.addEventListener('click', function() {
+        stopMapPlayback();
+        mapYearSlider.value = maxYear;
+        updateMapYearFilter();
+      });
+
+      mapPlayButton.addEventListener('click', toggleMapPlay);
+
+      // Network event listeners
+      networkYearSlider.addEventListener('input', () => {
+        if (networkIsPlaying) stopNetworkPlayback();
+        updateNetworkYearFilter();
+      });
+
+      networkResetButton.addEventListener('click', function() {
+        stopNetworkPlayback();
+        networkYearSlider.value = minYear;
+        updateNetworkYearFilter();
+      });
+
+      networkPlayButton.addEventListener('click', toggleNetworkPlay);
+
+      toggleResearchers.addEventListener('click', switchToResearchers);
+      toggleInstitutions.addEventListener('click', switchToInstitutions);
+
+      // Initialize
+      initMap();
+      updateMapYearFilter();
+      updateNetworkYearFilter();
+      switchToResearchers();
+    });
+  </script>
+</MainLayout>

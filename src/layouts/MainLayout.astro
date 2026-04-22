@@ -1,0 +1,182 @@
+---
+import { siteConfig } from '../config/site.config';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  conditionDisplayName,
+  contactEmail,
+  plausibleDomain,
+  googleAnalyticsId,
+  bootswatchTheme,
+  enableResearcherProfiles,
+  enableInstitutionMap,
+} = siteConfig;
+
+const defaultDescription = `Evidence-based information on ${conditionDisplayName} research, treatments, and news`;
+const { title, description = defaultDescription } = Astro.props;
+const currentPath = Astro.url.pathname;
+const siteName = `${conditionDisplayName} Research`;
+const base = import.meta.env.BASE_URL;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://plausible.io https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://plausible.io https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <title>{title}</title>
+
+    <!-- Bootswatch Theme -->
+    {bootswatchTheme && (
+      <link
+        rel="stylesheet"
+        href={`https://cdn.jsdelivr.net/npm/bootswatch@5/dist/${bootswatchTheme}/bootstrap.min.css`}
+      />
+    )}
+
+    <!-- Analytics -->
+    {plausibleDomain && (
+      <script
+        is:inline
+        defer
+        data-domain={plausibleDomain}
+        src="https://plausible.io/js/script.js"
+      ></script>
+    )}
+    {googleAnalyticsId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
+        <script is:inline define:vars={{ googleAnalyticsId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', googleAnalyticsId);
+        </script>
+      </>
+    )}
+  </head>
+  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo/Brand -->
+          <div class="flex-shrink-0">
+            <a href={base} class="text-xl font-bold text-primary-600 hover:text-primary-700">
+              {siteName}
+            </a>
+          </div>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex space-x-8">
+            <a
+              href={base}
+              class={currentPath === base || currentPath === base + '/' ? 'text-primary-600 border-b-2 border-primary-600 pb-1' : 'text-gray-600 hover:text-primary-600'}
+            >
+              Home
+            </a>
+            <a
+              href={`${base}research/`}
+              class={currentPath.includes('/research') ? 'text-primary-600 border-b-2 border-primary-600 pb-1' : 'text-gray-600 hover:text-primary-600'}
+            >
+              Publications
+            </a>
+            <a
+              href={`${base}clinical-trials/`}
+              class={currentPath.includes('/clinical-trials') ? 'text-primary-600 border-b-2 border-primary-600 pb-1' : 'text-gray-600 hover:text-primary-600'}
+            >
+              Clinical Trials
+            </a>
+            {enableResearcherProfiles && (
+              <a
+                href={`${base}researchers/`}
+                class={currentPath.includes('/researchers') ? 'text-primary-600 border-b-2 border-primary-600 pb-1' : 'text-gray-600 hover:text-primary-600'}
+              >
+                Researchers
+              </a>
+            )}
+            {enableInstitutionMap && (
+              <a
+                href={`${base}institutions/`}
+                class={currentPath.includes('/institutions') ? 'text-primary-600 border-b-2 border-primary-600 pb-1' : 'text-gray-600 hover:text-primary-600'}
+              >
+                Institutions
+              </a>
+            )}
+          </div>
+
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button id="mobile-menu-button" class="text-gray-600 hover:text-primary-600">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden pb-4">
+          <a href={base} class="block py-2 text-gray-600 hover:text-primary-600">Home</a>
+          <a href={`${base}research/`} class="block py-2 text-gray-600 hover:text-primary-600">Publications</a>
+          <a href={`${base}clinical-trials/`} class="block py-2 text-gray-600 hover:text-primary-600">Clinical Trials</a>
+          {enableResearcherProfiles && (
+            <a href={`${base}researchers/`} class="block py-2 text-gray-600 hover:text-primary-600">Researchers</a>
+          )}
+          {enableInstitutionMap && (
+            <a href={`${base}institutions/`} class="block py-2 text-gray-600 hover:text-primary-600">Institutions</a>
+          )}
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 mt-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="border-t border-gray-700 pt-6 text-center text-sm">
+          <p class="mb-2">
+            <strong>Medical Disclaimer:</strong> This information is for educational purposes only and does not constitute medical advice.
+            Consult a healthcare provider for diagnosis and treatment.
+          </p>
+          <p class="text-gray-400">
+            Sources: PubMed, OpenAlex, ClinicalTrials.gov • Last updated: {new Date().toISOString().split('T')[0]}
+          </p>
+          <p class="text-gray-400 mt-2">
+            © {new Date().getFullYear()} {siteName}
+            {contactEmail && !contactEmail.includes('example.com') && !contactEmail.includes('yourdomain.com') && (
+              <> • Contact: <a href={`mailto:${contactEmail}`} class="text-primary-400 hover:text-primary-300 underline">{contactEmail}</a></>
+            )}
+          </p>
+          <p class="text-gray-400 mt-2 text-xs">
+            Built with <a href="https://github.com/genomicepi/researchnet-template" class="text-primary-400 hover:text-primary-300 underline" target="_blank" rel="noopener">ResearchNet Template</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu toggle
+      const button = document.getElementById('mobile-menu-button');
+      const menu = document.getElementById('mobile-menu');
+
+      button?.addEventListener('click', () => {
+        menu?.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

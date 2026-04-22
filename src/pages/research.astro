@@ -1,0 +1,430 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import PaperCard from '../components/PaperCard.astro';
+import type { Paper } from '../lib/types';
+import { siteConfig } from '../config/site.config';
+
+// Load papers
+import papersData from '../data/papers.json';
+
+const papers = papersData as Paper[];
+const { conditionDisplayName, pubmedStartYear } = siteConfig;
+
+// Get unique years for filtering
+const years = [...new Set(papers.map(p => p.pubDate.substring(0, 4)))].sort((a, b) => b.localeCompare(a));
+
+// Get all MeSH terms with counts
+const meshTermCounts = new Map<string, number>();
+papers.forEach(paper => {
+  paper.meshTerms.forEach(term => {
+    meshTermCounts.set(term, (meshTermCounts.get(term) || 0) + 1);
+  });
+});
+
+// Get top 30 MeSH terms
+const topMeshTerms = [...meshTermCounts.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 30)
+  .map(([term, count]) => ({ term, count }));
+
+const totalPapers = papers.length;
+
+const getAuthorName = (author: Paper['authors'][number]) => typeof author === 'string' ? author : author.name;
+---
+
+<MainLayout
+  title={`Publications | ${conditionDisplayName}`}
+  description={`Browse ${conditionDisplayName} research papers from PubMed, automatically updated weekly`}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Publications</h1>
+      <p class="text-lg text-gray-600 mb-4">
+        Comprehensive database of {conditionDisplayName} research from PubMed, automatically updated weekly.
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-lg shadow-sm border border-blue-200">
+          <div class="text-3xl font-bold text-indigo-700" id="total-count">{totalPapers}</div>
+          <div class="text-sm text-indigo-600 font-medium">Papers Shown</div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-50 to-pink-100 p-4 rounded-lg shadow-sm border border-purple-200">
+          <div class="text-3xl font-bold text-purple-700">{years.length}</div>
+          <div class="text-sm text-purple-600 font-medium">Years Covered</div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-lg shadow-sm border border-green-200">
+          <div class="text-3xl font-bold text-emerald-700" id="active-filters">0</div>
+          <div class="text-sm text-emerald-600 font-medium">Active Filters</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Publications Timeline -->
+    <div class="bg-gradient-to-br from-white to-blue-50 rounded-lg shadow-md p-6 mb-8 border border-blue-100">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Publications Over Time</h2>
+      <p class="text-gray-600 mb-6">
+        Annual {conditionDisplayName} research publication count
+      </p>
+      <div style="height: 350px;">
+        <canvas id="timeline-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-6">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search by title, author, or keyword..."
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      />
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="mb-6 space-y-4">
+      <!-- Year Filter -->
+      <details class="bg-gray-50 p-4 rounded-lg" open>
+        <summary class="cursor-pointer font-semibold text-gray-900 flex justify-between items-center">
+          <span>Filter by Year ({years.length} years)</span>
+          <span id="year-filter-count" class="text-sm text-gray-500"></span>
+        </summary>
+        <div class="mt-3 flex flex-wrap gap-2" id="year-filters">
+          <button
+            data-year="all"
+            class="year-filter px-3 py-1 bg-primary-600 text-white rounded text-sm hover:bg-primary-700 transition"
+          >
+            All Years ({totalPapers})
+          </button>
+          {years.map(year => {
+            const count = papers.filter(p => p.pubDate.startsWith(year)).length;
+            return (
+              <button
+                data-year={year}
+                class="year-filter px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition"
+              >
+                {year} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </details>
+
+      <!-- MeSH Term Filter -->
+      <details class="bg-gray-50 p-4 rounded-lg">
+        <summary class="cursor-pointer font-semibold text-gray-900 flex justify-between items-center">
+          <span>Filter by Topic (Top {topMeshTerms.length} MeSH Terms)</span>
+          <span id="mesh-filter-count" class="text-sm text-gray-500"></span>
+        </summary>
+        <div class="mt-3 flex flex-wrap gap-2" id="mesh-filters">
+          {topMeshTerms.map(({ term, count }) => (
+            <button
+              data-mesh={term}
+              class="mesh-filter px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition"
+            >
+              {term} ({count})
+            </button>
+          ))}
+        </div>
+      </details>
+
+      <!-- Clear Filters -->
+      <div class="flex justify-between items-center">
+        <button
+          id="clear-filters"
+          class="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition hidden"
+        >
+          Clear All Filters
+        </button>
+        <div id="no-results" class="text-gray-600 italic hidden">
+          No papers match the current filters. Try adjusting your selection.
+        </div>
+      </div>
+    </div>
+
+    <!-- Papers List -->
+    <div class="space-y-6" id="papers-list">
+      {papers.map(paper => (
+        <div
+          class="paper-card"
+          data-year={paper.pubDate.substring(0, 4)}
+          data-mesh={JSON.stringify(paper.meshTerms)}
+          data-title={paper.title.toLowerCase()}
+          data-authors={paper.authors.map(getAuthorName).join(' ').toLowerCase()}
+          data-abstract={paper.abstract.toLowerCase()}
+        >
+          <PaperCard
+            paper={paper}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</MainLayout>
+
+<script>
+  // Filter state
+  let selectedYear: string | null = null;
+  let selectedMeshTerms: Set<string> = new Set();
+  let searchQuery = '';
+
+  // DOM elements
+  const paperCards = document.querySelectorAll('.paper-card') as NodeListOf<HTMLElement>;
+  const yearFilters = document.querySelectorAll('.year-filter') as NodeListOf<HTMLButtonElement>;
+  const meshFilters = document.querySelectorAll('.mesh-filter') as NodeListOf<HTMLButtonElement>;
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const clearButton = document.getElementById('clear-filters') as HTMLButtonElement;
+  const totalCount = document.getElementById('total-count') as HTMLElement;
+  const activeFiltersCount = document.getElementById('active-filters') as HTMLElement;
+  const noResults = document.getElementById('no-results') as HTMLElement;
+  const yearFilterCount = document.getElementById('year-filter-count') as HTMLElement;
+  const meshFilterCount = document.getElementById('mesh-filter-count') as HTMLElement;
+
+  // Apply filters
+  function applyFilters() {
+    let visibleCount = 0;
+
+    paperCards.forEach(card => {
+      const year = card.dataset.year || '';
+      const meshTerms = JSON.parse(card.dataset.mesh || '[]') as string[];
+      const title = card.dataset.title || '';
+      const authors = card.dataset.authors || '';
+      const abstract = card.dataset.abstract || '';
+
+      // Check year filter
+      const yearMatch = !selectedYear || selectedYear === 'all' || year === selectedYear;
+
+      // Check MeSH term filter (paper must have ALL selected terms)
+      const meshMatch = selectedMeshTerms.size === 0 ||
+        [...selectedMeshTerms].every(term => meshTerms.includes(term));
+
+      // Check search query
+      const searchMatch = !searchQuery ||
+        title.includes(searchQuery) ||
+        authors.includes(searchQuery) ||
+        abstract.includes(searchQuery);
+
+      // Show/hide card
+      if (yearMatch && meshMatch && searchMatch) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update counts
+    totalCount.textContent = visibleCount.toString();
+    const filterCount = (selectedYear && selectedYear !== 'all' ? 1 : 0) + selectedMeshTerms.size + (searchQuery ? 1 : 0);
+    activeFiltersCount.textContent = filterCount.toString();
+
+    // Update filter labels
+    if (selectedYear && selectedYear !== 'all') {
+      yearFilterCount.textContent = `(${selectedYear} selected)`;
+    } else {
+      yearFilterCount.textContent = '';
+    }
+
+    if (selectedMeshTerms.size > 0) {
+      meshFilterCount.textContent = `(${selectedMeshTerms.size} selected)`;
+    } else {
+      meshFilterCount.textContent = '';
+    }
+
+    // Show/hide clear button
+    if (filterCount > 0) {
+      clearButton.classList.remove('hidden');
+    } else {
+      clearButton.classList.add('hidden');
+    }
+
+    // Show/hide no results message
+    if (visibleCount === 0) {
+      noResults.classList.remove('hidden');
+    } else {
+      noResults.classList.add('hidden');
+    }
+  }
+
+  // Year filter click handler
+  yearFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      const year = button.dataset.year || '';
+
+      // Update selected year
+      selectedYear = year;
+
+      // Update button styles
+      yearFilters.forEach(btn => {
+        if (btn.dataset.year === year) {
+          btn.classList.remove('bg-gray-200', 'text-gray-700');
+          btn.classList.add('bg-primary-600', 'text-white');
+        } else {
+          btn.classList.remove('bg-primary-600', 'text-white');
+          btn.classList.add('bg-gray-200', 'text-gray-700');
+        }
+      });
+
+      applyFilters();
+    });
+  });
+
+  // MeSH filter click handler
+  meshFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      const term = button.dataset.mesh || '';
+
+      // Toggle selection
+      if (selectedMeshTerms.has(term)) {
+        selectedMeshTerms.delete(term);
+        button.classList.remove('bg-primary-600', 'text-white');
+        button.classList.add('bg-gray-200', 'text-gray-700');
+      } else {
+        selectedMeshTerms.add(term);
+        button.classList.remove('bg-gray-200', 'text-gray-700');
+        button.classList.add('bg-primary-600', 'text-white');
+      }
+
+      applyFilters();
+    });
+  });
+
+  // Search input handler
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = (e.target as HTMLInputElement).value.toLowerCase().trim();
+    applyFilters();
+  });
+
+  // Clear filters button
+  clearButton.addEventListener('click', () => {
+    // Reset state
+    selectedYear = null;
+    selectedMeshTerms.clear();
+    searchQuery = '';
+    searchInput.value = '';
+
+    // Reset year filters
+    yearFilters.forEach(btn => {
+      if (btn.dataset.year === 'all') {
+        btn.classList.remove('bg-gray-200', 'text-gray-700');
+        btn.classList.add('bg-primary-600', 'text-white');
+      } else {
+        btn.classList.remove('bg-primary-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      }
+    });
+
+    // Reset MeSH filters
+    meshFilters.forEach(btn => {
+      btn.classList.remove('bg-primary-600', 'text-white');
+      btn.classList.add('bg-gray-200', 'text-gray-700');
+    });
+
+    applyFilters();
+  });
+</script>
+
+<!-- Chart.js for timeline -->
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Timeline Chart -->
+<script is:inline define:vars={{ papers, pubmedStartYear }}>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('timeline-chart');
+
+    // Get primary color from Bootstrap CSS
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary') || '#0d6efd';
+
+    // Count papers per year
+    const yearCounts = {};
+    papers.forEach(paper => {
+      const year = paper.pubDate.substring(0, 4);
+      if (year && parseInt(year) >= pubmedStartYear) {
+        yearCounts[year] = (yearCounts[year] || 0) + 1;
+      }
+    });
+
+    // Get all years sorted
+    const years = Object.keys(yearCounts).sort();
+    const counts = years.map(year => yearCounts[year]);
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: [{
+          label: 'Publications',
+          data: counts,
+          backgroundColor: primaryColor,
+          borderColor: primaryColor,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 30
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (value) => value,
+            font: {
+              weight: 'bold',
+              size: 12
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Year',
+              font: { size: 14 }
+            }
+          },
+          y: {
+            display: false,
+            beginAtZero: true,
+            grid: {
+              display: false
+            }
+          }
+        }
+      },
+      plugins: [{
+        id: 'valueLabels',
+        afterDatasetsDraw: function(chart) {
+          const ctx = chart.ctx;
+          chart.data.datasets.forEach((dataset, i) => {
+            const meta = chart.getDatasetMeta(i);
+            if (!meta.hidden) {
+              meta.data.forEach((bar, index) => {
+                const data = dataset.data[index];
+                ctx.fillStyle = '#1f2937';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(data, bar.x, bar.y - 5);
+              });
+            }
+          });
+        }
+      }]
+    });
+  });
+</script>

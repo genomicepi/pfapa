@@ -1,0 +1,108 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { siteConfig } from '../config/site.config';
+
+const { conditionDisplayName } = siteConfig;
+const base = import.meta.env.BASE_URL;
+---
+
+<MainLayout title={`${conditionDisplayName} - Research, Treatments & News`}>
+  <section class="py-5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-4 p-5 p-md-6 shadow-sm border bg-white">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-8">
+            <span class="badge text-bg-primary mb-3">Research Database</span>
+            <h1 class="display-5 fw-bold text-dark mb-3">{conditionDisplayName} Research</h1>
+            <p class="lead text-secondary mb-4">
+              Browse peer-reviewed publications, clinical trials, researcher networks, and institution activity in one place.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href={`${base}research/`} class="btn btn-primary btn-lg">Browse Publications</a>
+              <a href={`${base}clinical-trials/`} class="btn btn-outline-secondary btn-lg">View Clinical Trials</a>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card border-0 bg-light shadow-sm">
+              <div class="card-body p-4">
+                <h2 class="h5 fw-semibold mb-3">What this site includes</h2>
+                <ul class="mb-0 ps-3 text-secondary">
+                  <li class="mb-2">PubMed papers relevant to {conditionDisplayName}</li>
+                  <li class="mb-2">ClinicalTrials.gov studies and statuses</li>
+                  <li class="mb-2">Researcher and institution profiles</li>
+                  <li>Automatically refreshed source data</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h5 fw-semibold mb-2">Publications</h2>
+            <p class="text-secondary mb-3">Explore research papers with filtering by year, topic, and keyword.</p>
+            <a href={`${base}research/`} class="link-primary fw-semibold text-decoration-none">Open publications →</a>
+          </div>
+        </div>
+        <div class="card h-100 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h5 fw-semibold mb-2">Clinical Trials</h2>
+            <p class="text-secondary mb-3">Review recruiting, active, and completed studies for this condition.</p>
+            <a href={`${base}clinical-trials/`} class="link-primary fw-semibold text-decoration-none">Open trials →</a>
+          </div>
+        </div>
+        <div class="card h-100 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h5 fw-semibold mb-2">Researchers</h2>
+            <p class="text-secondary mb-3">See leading authors, collaboration patterns, and affiliation networks.</p>
+            <a href={`${base}researchers/`} class="link-primary fw-semibold text-decoration-none">Explore researchers →</a>
+          </div>
+        </div>
+        <div class="card h-100 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h5 fw-semibold mb-2">Institutions</h2>
+            <p class="text-secondary mb-3">Find the universities, hospitals, and centers contributing to the field.</p>
+            <a href={`${base}institutions/`} class="link-primary fw-semibold text-decoration-none">Explore institutions →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <div class="row g-4">
+            <div class="col-md-4">
+              <h2 class="h5 fw-semibold mb-2">Trusted sources</h2>
+              <p class="text-secondary mb-0">This template pulls data from well-established biomedical and scholarly databases.</p>
+            </div>
+            <div class="col-md-8">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="rounded-3 border bg-light p-3">
+                  <div class="fw-semibold">PubMed</div>
+                  <div class="text-secondary small">Published biomedical literature</div>
+                </div>
+                <div class="rounded-3 border bg-light p-3">
+                  <div class="fw-semibold">ClinicalTrials.gov</div>
+                  <div class="text-secondary small">Registered interventional and observational studies</div>
+                </div>
+                <div class="rounded-3 border bg-light p-3">
+                  <div class="fw-semibold">OpenAlex</div>
+                  <div class="text-secondary small">Researcher and institution metadata</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>

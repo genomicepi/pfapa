@@ -1,0 +1,192 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { siteConfig } from '../../config/site.config';
+import authorsRaw from '../../data/authors.json';
+import papersRaw from '../../data/papers.json';
+import type { Paper, ResearchAuthor } from '../../lib/data-types';
+
+const { conditionDisplayName } = siteConfig;
+const papers = papersRaw as Paper[];
+
+export function getStaticPaths() {
+  const allAuthors = authorsRaw as ResearchAuthor[];
+  return allAuthors.map(author => ({
+    params: { id: author.id.replace('https://openalex.org/', '') },
+    props: { author }
+  }));
+}
+
+const { author } = Astro.props as { author: ResearchAuthor };
+
+// Get full paper details for this author's papers
+const authorPapers = papers
+  .filter((paper) => author.conditionPapers.includes(paper.pmid))
+  .sort((a, b) => b.pubDate.localeCompare(a.pubDate));
+
+// Extract year from paper pubDate
+function getYear(pubDate: string) {
+  const match = pubDate.match(/(\d{4})/);
+  return match ? parseInt(match[1]) : 0;
+}
+
+// Get publication timeline
+const yearCounts: Record<string, number> = {};
+authorPapers.forEach((paper: Paper) => {
+  const year = getYear(paper.pubDate);
+  if (year) {
+    yearCounts[year] = (yearCounts[year] || 0) + 1;
+  }
+});
+
+---
+
+<MainLayout
+  title={`${author.name} | ${conditionDisplayName} Researcher`}
+  description={`Research profile for ${author.name}, ${author.conditionPapersCount} publications on ${conditionDisplayName}`}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">{author.name}</h1>
+
+          {author.currentAffiliation && (
+            <p class="text-xl text-gray-600 mb-4">
+              {author.currentAffiliation}
+            </p>
+          )}
+
+          <div class="flex flex-wrap gap-4 mt-4">
+            {author.orcidUrl && (
+              <a
+                href={author.orcidUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 12.636c-.9 0-1.369-.45-1.369-1.35s.469-1.35 1.369-1.35c.9 0 1.369.45 1.369 1.35s-.469 1.35-1.369 1.35zm9.631 4.364h-2.736V9.9c0-.9-.45-1.35-1.35-1.35-.9 0-1.35.45-1.35 1.35V17h-2.736V8.1h2.736v.9c.45-.675 1.238-1.125 2.138-1.125 1.575 0 3.298.9 3.298 3.375V17z"/>
+                </svg>
+                ORCID Profile
+              </a>
+            )}
+
+            {author.openAlexUrl && (
+              <a
+                href={author.openAlexUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                OpenAlex Profile
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl font-bold text-primary-600">{author.conditionPapersCount}</div>
+        <div class="text-gray-600 text-sm">Publications</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl font-bold text-primary-600">{author.hIndex}</div>
+        <div class="text-gray-600 text-sm">h-index</div>
+        <div class="text-xs text-gray-500 mt-1">({author.citedByCount.toLocaleString()} citations, {author.worksCount} total works)</div>
+      </div>
+    </div>
+
+    <!-- Research Topics -->
+    {author.topics && author.topics.length > 0 && (
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Research Topics</h2>
+        <div class="flex flex-wrap gap-2">
+          {author.topics.map((topic) => (
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+              {topic.name} ({topic.count})
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Publications -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">{conditionDisplayName} Publications</h2>
+
+      <div class="space-y-6">
+        {authorPapers.map(paper => (
+          <article class="border-b border-gray-200 pb-6 last:border-0">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              <a
+                href={paper.pubmedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-primary-600 transition-colors"
+              >
+                {paper.title}
+              </a>
+            </h3>
+
+            <div class="text-sm text-gray-600 mb-2">
+              {Array.isArray(paper.authors) && paper.authors.length > 0 && (
+                <span>
+                  {paper.authors.slice(0, 5).map((authorName) => typeof authorName === 'string' ? authorName : authorName.name).join(', ')}
+                  {paper.authors.length > 5 && `, et al.`}
+                </span>
+              )}
+            </div>
+
+            <div class="text-sm text-gray-500 mb-2">
+              <span class="font-medium">{paper.journal}</span>
+              {' • '}
+              <time>{paper.pubDate}</time>
+            </div>
+
+            {paper.abstract && paper.abstract !== 'No abstract available' && (
+              <p class="text-sm text-gray-700 mt-2 line-clamp-3">
+                {paper.abstract}
+              </p>
+            )}
+
+            <div class="mt-3 flex gap-3">
+              <a
+                href={paper.pubmedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-primary-600 hover:text-primary-800 font-medium"
+              >
+                View on PubMed →
+              </a>
+              {paper.doi && (
+                <a
+                  href={`https://doi.org/${paper.doi}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-primary-600 hover:text-primary-800 font-medium"
+                >
+                  DOI →
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</MainLayout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
