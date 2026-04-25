@@ -1,1 +1,218 @@
-[]
+[
+  {
+    "id": "local-gharra-a",
+    "name": "Gharra A",
+    "normalizedName": "Gharra A",
+    "variants": [
+      "Gharra A"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "The Ruth and Bruce Rappaport Faculty of Medicine, Technion-Israel Institute of Technology, Haifa, Israel.",
+      "Department of Pediatrics B, Ruth Rappaport Children's Hospital, Rambam Medical Center, Haifa, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-amarilyo-g",
+    "name": "Amarilyo G",
+    "normalizedName": "Amarilyo G",
+    "variants": [
+      "Amarilyo G"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "Pediatric Rheumatology Unit, Schneider Children's Medical Center of Israel, Petach Tikva, Israel.",
+      "Sackler Faculty of Medicine, Tel Aviv University, Ramat Aviv, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-harel-l",
+    "name": "Harel L",
+    "normalizedName": "Harel L",
+    "variants": [
+      "Harel L"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "Pediatric Rheumatology Unit, Schneider Children's Medical Center of Israel, Petach Tikva, Israel.",
+      "Sackler Faculty of Medicine, Tel Aviv University, Ramat Aviv, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-levinsky-y",
+    "name": "Levinsky Y",
+    "normalizedName": "Levinsky Y",
+    "variants": [
+      "Levinsky Y"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "Pediatric Rheumatology Unit, Schneider Children's Medical Center of Israel, Petach Tikva, Israel.",
+      "Sackler Faculty of Medicine, Tel Aviv University, Ramat Aviv, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-tal-r",
+    "name": "Tal R",
+    "normalizedName": "Tal R",
+    "variants": [
+      "Tal R"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "Pediatric Rheumatology Unit, Schneider Children's Medical Center of Israel, Petach Tikva, Israel.",
+      "Sackler Faculty of Medicine, Tel Aviv University, Ramat Aviv, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-miller-barmak-a",
+    "name": "Miller-Barmak A",
+    "normalizedName": "Miller-Barmak A",
+    "variants": [
+      "Miller-Barmak A"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "Pediatric Rheumatology Service, Ruth Rappaport Children's Hospital, Rambam Medical Center, Haifa, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-sluvis-b",
+    "name": "Sluvis B",
+    "normalizedName": "Sluvis B",
+    "variants": [
+      "Sluvis B"
+    ],
+    "orcid": "",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "Department of Pediatrics B, Ruth Rappaport Children's Hospital, Rambam Medical Center, Haifa, Israel.",
+      "Pediatric Rheumatology Service, Ruth Rappaport Children's Hospital, Rambam Medical Center, Haifa, Israel."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "",
+    "updatedDate": "2026-04-25"
+  },
+  {
+    "id": "local-butbul-a",
+    "name": "Butbul Aviel Y",
+    "normalizedName": "Butbul A",
+    "variants": [
+      "Butbul Aviel Y"
+    ],
+    "orcid": "0000-0003-2151-7327",
+    "worksCount": 1,
+    "citedByCount": 0,
+    "hIndex": 0,
+    "i10Index": 0,
+    "conditionPapers": [
+      "42026657"
+    ],
+    "conditionPapersCount": 1,
+    "currentAffiliation": "",
+    "currentInstitutionId": "",
+    "affiliationHistory": [
+      "The Ruth and Bruce Rappaport Faculty of Medicine, Technion-Israel Institute of Technology, Haifa, Israel. yonatanbutbul@gmail.com.",
+      "Department of Pediatrics B, Ruth Rappaport Children's Hospital, Rambam Medical Center, Haifa, Israel. yonatanbutbul@gmail.com.",
+      "Pediatric Rheumatology Service, Ruth Rappaport Children's Hospital, Rambam Medical Center, Haifa, Israel. yonatanbutbul@gmail.com."
+    ],
+    "topics": [],
+    "openAlexUrl": "",
+    "orcidUrl": "https://orcid.org/0000-0003-2151-7327",
+    "updatedDate": "2026-04-25"
+  }
+]

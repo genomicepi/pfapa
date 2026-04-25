@@ -1,5 +1,1304 @@
 {
-  "lastUpdated": "",
-  "totalTrials": 0,
-  "trials": []
+  "lastUpdated": "2026-04-25T06:13:32.129Z",
+  "totalTrials": 6,
+  "trials": [
+    {
+      "nctId": "NCT07476625",
+      "briefTitle": "Efficacy and Safety of Thalidomide for Pediatric PFAPA Syndrome",
+      "officialTitle": "Efficacy and Safety of Thalidomide in Treating Pediatric PFAPA Syndrome: A Multicenter Randomized Controlled Trial",
+      "status": "NOT_YET_RECRUITING",
+      "statusVerifiedDate": "2026-03",
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "NA"
+      ],
+      "briefSummary": "The goal of this clinical trial is to evaluate the efficacy and safety of thalidomide in the treatment of children with Periodic Fever, Aphthous Stomatitis, Pharyngitis, and Adenitis (PFAPA) syndrome. The study focuses on children diagnosed with PFAPA syndrome. The main questions it aims to answer are:\n\nCan thalidomide significantly reduce the frequency of febrile episodes in children with PFAPA syndrome? What is the safety profile and tolerability of thalidomide in this pediatric population? Researchers will compare the thalidomide group to a colchicine group to see if thalidomide is more effective in controlling recurrent fever and associated symptoms.\n\nParticipants will:\n\nTake the assigned medication (thalidomide or colchicine) daily for a duration of 6 months.\n\nAttend follow-up visits every 4 weeks at the clinic. Maintain a diary to record the frequency of fever episodes and any other clinical symptoms.\n\nUndergo safety assessments and physical examinations during each scheduled visit.",
+      "conditions": [
+        "Periodic Fever, Aphthous Stomatitis, Pharyngitis, and Adenitis Syndrome"
+      ],
+      "startDate": "2026-04-01",
+      "completionDate": "2028-03-30",
+      "primaryCompletionDate": "2027-03-31",
+      "enrollment": 106,
+      "enrollmentType": "ESTIMATED",
+      "sponsor": "Wenjie Zheng",
+      "sponsorClass": "OTHER",
+      "locations": [],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "Thalidomide (50mg)",
+          "description": "The starting dose of thalidomide is 1 mg/kg/day, administered orally before bedtime. If febrile episodes persist during treatment, the dosage will be increased starting the day after the next fever (maximum dose not to exceed 2 mg/kg/day, with a maximum total dose of 100 mg/day)."
+        },
+        {
+          "type": "DRUG",
+          "name": "Colchicine",
+          "description": "The starting dose of colchicine is 0.5 mg/day administered orally. If febrile episodes persist during treatment, the dosage will be increased starting the day after the next fever (maximum dose not to exceed 1.25 mg/day)."
+        }
+      ],
+      "hasResults": false,
+      "url": "https://clinicaltrials.gov/study/NCT07476625"
+    },
+    {
+      "nctId": "NCT05656365",
+      "briefTitle": "Evaluating the Genetics and Immunology of Periodic Fever, Aphthous Stomatitis, Pharyngitis, and Cervical Adenitis (PFAPA) Syndrome and Other Tonsil Disorders",
+      "officialTitle": "Evaluating the Genetics and Immunology of Periodic Fever, Aphthous Stomatitis, Pharyngitis, and Cervical Adenitis (PFAPA) Syndrome and Other Tonsil Disorders",
+      "status": "RECRUITING",
+      "statusVerifiedDate": "2026-04-01",
+      "studyType": "OBSERVATIONAL",
+      "phases": [],
+      "briefSummary": "Background:\n\nPeriodic fever, aphthous stomatitis, pharyngitis, and cervical adenitis (PFAPA) is the most common periodic fever syndrome of childhood. Symptoms can include swelling of the glands in the throat, mouth ulcers, and tonsillitis. Removal of the tonsils can stop the periodic flareups. But researchers do not know how PFAPA develops. In this natural history study, researchers will collect specimens and data from people with PFAPA to see what they might have in common.\n\nObjective:\n\nTo collect blood and other specimens from people with PFAPA to learn more about the illness.\n\nEligibility:\n\nPeople aged 1 month or older with symptoms of PFAPA or another tonsil disorder.\n\nDesign:\n\nParticipants will be screened. Their medical records will be reviewed. Researchers will ask about a family history of PFAPA.\n\nThe following specimens may be collected:\n\nBlood. Blood will be drawn either from a needle inserted into a vein or from a prick in the finger or heel.\n\nMucus and cells. A stick with soft padding on the tip may be rubbed inside the nostrils or mouth.\n\nStool.\n\nSaliva.\n\nTissue samples may be taken if participants are having surgery to remove the tonsils or adenoids. Participants having surgery may also have a nasopharyngeal wash; salt water will be squirted into the back of the throat and then sucked back out with a syringe.\n\nMost participants will provide specimens only once. They can do this in person at the clinic; they can also have their local health providers send specimens to the researchers. Some participants may have optional follow-up visits over 10 years.",
+      "detailedDescription": "Study Description:\n\nThe purpose of this multisite study is to collect specimens and data from patients with periodic fever, aphthous stomatitis, pharyngitis, and cervical adenitis (PFAPA) syndrome and other tonsil disorders for genetic, immunologic, cellular, molecular, and microbial research into the pathogenesis of these conditions. Specimens include blood, saliva, buccal swabs, oropharyngeal swabs, nasopharyngeal swabs, nasopharyngeal wash, and/or stool. If a participant is scheduled to undergo a clinically indicated tonsillectomy and/or adenoidectomy, then leftover clinical specimens will also be collected for research. Participants may either be seen in person at the study sites or may be seen remotely via telehealth and provide send-in samples collected locally.\n\nPrimary Objective:\n\nTo collect samples to understand the immunologic mechanisms and genetic and microbial risk factors for PFAPA and other tonsil disorders.\n\nPrimary Endpoints:\n\n1. Identify genetic risk variants for PFAPA and other tonsil disorders.\n2. Characterize immune cell populations, gene expression (including at the single-cell level), epigenetic features, and protein expression ex vivo in blood, tissue, washes, or swabs from people with PFAPA and other tonsil disorders.\n3. Characterize the tonsillar/adenoid, oral, nasal and/or stool microbiota in people with PFAPA and other tonsil disorders.\n4. Characterize clinical outcomes following tonsillectomy and other clinically indicated treatments.\n\nSecondary Objective: To understand the characteristics and function of unique cell populations in the pharyngeal lymphoid tissues (tonsils and adenoids) and how immune responses to antigens are generated in these tissues.\n\nSecondary Endpoints:\n\n1. Study responses to antigens and infection in the mucosal lymphoid tissue and peripheral blood.\n2. Characterize unique immune cell populations present in the mucosal tissue.\n3. Characterize immunologic and molecular pathways in the tissue cells.",
+      "conditions": [
+        "Periodic Fever, Aphthous Stomatitis, Pharyngitis, And Cervical Adenitis (Pfapa)",
+        "Obstructive Sleep Apnea",
+        "Tonsillitis",
+        "Tonsil Disorder",
+        "Sleep Disordered Breathing"
+      ],
+      "startDate": "2023-05-23",
+      "completionDate": "2038-12-31",
+      "primaryCompletionDate": "2037-06-30",
+      "enrollment": 1500,
+      "enrollmentType": "ESTIMATED",
+      "sponsor": "National Institute of Allergy and Infectious Diseases (NIAID)",
+      "sponsorClass": "NIH",
+      "locations": [
+        {
+          "facility": "Children's National Medical Center",
+          "city": "Washington D.C.",
+          "state": "District of Columbia",
+          "country": "United States",
+          "geoPoint": {
+            "lat": 38.89511,
+            "lon": -77.03637
+          }
+        },
+        {
+          "facility": "Indiana University School of Medicine",
+          "city": "Indianapolis",
+          "state": "Indiana",
+          "country": "United States",
+          "geoPoint": {
+            "lat": 39.76838,
+            "lon": -86.15804
+          }
+        },
+        {
+          "facility": "National Institutes of Health Clinical Center",
+          "city": "Bethesda",
+          "state": "Maryland",
+          "country": "United States",
+          "geoPoint": {
+            "lat": 38.98067,
+            "lon": -77.10026
+          }
+        }
+      ],
+      "interventions": [],
+      "hasResults": false,
+      "url": "https://clinicaltrials.gov/study/NCT05656365"
+    },
+    {
+      "nctId": "NCT05200715",
+      "briefTitle": "AutoInflammatory Disease Alliance Registry (AIDA)",
+      "officialTitle": "Development of an International Multicenter Registry of Patients With Monogenic and Polygenic Autoinflammatory Diseases Aimed at Clinical and Therapeutical Data Collection and Analysis",
+      "status": "RECRUITING",
+      "statusVerifiedDate": "2025-07",
+      "studyType": "OBSERVATIONAL",
+      "phases": [],
+      "briefSummary": "Autoinflammatory diseases (AID) are clinical entities characterized by recurrent inflammatory attacks in absence of infection, neoplasm or deregulation of the adaptive immune system. Among them, hereditary periodic syndromes, also known as monogenic AID, represent the prototype of this disease group, caused by mutations in genes involved in the regulation of innate immunity, inflammation and cell death. Based on recent experimental acquisitions in the field of monogenic AID, several immunologic disorders have been reclassified as polygenic/multifactorial AID, sharing pathogenetic and clinical features with hereditary periodic fevers. This has paved the way to new treatment targets for patients suffering from rare diseases of unknown origin, including Behçet's disease, Still disease, Schnitzler's disease, PFAPA (periodic fever, aphthous stomatitis, pharyngitis and cervical adenitis) syndrome, chronic recurrent multifocal osteomyelitis (CRMO), non-infectious uveitis and scleritis. Gathering information on such rare conditions is made difficult by the small number of patients, along with the difficulty of obtaining an accurate diagnosis in non-specialized clinical settings.\n\nIn this context, the AIDA project promotes international collaboration among clinical centres to develop a permanent registry aimed at collecting demographic, genetic, clinical and therapeutic data of patients affected by monogenic and polygenic AID, in order to expand the current knowledge of these rare conditions.",
+      "detailedDescription": "The AIDA registry service is based on REDCap (Research Electronic Data Capture, project-redcap.org), a secure web application for building and managing online surveys and databases, designed to support data capture for research studies. The platform is directly accessible through the AIDA website, after inserting a personal username and password. Currently, 11 registries are available, each one dedicated to the collection of data about:\n\n* monogenic AID\n* PFAPA syndrome\n* undifferentiated systemic AID (USAID)\n* Behçet's disease\n* Schnitzler's disease\n* VEXAS (vacuoles, E1 enzyme, X-linked, autoinflammatory, somatic) syndrome\n* Still disease\n* noninfectious uveitis\n* noninfectious scleritis\n* spondyloarthritis\n* Castleman disease\n\nThe registry will pursue the following aims within the first 36 months from the start of the enrollment:\n\n1. to identify any association between clinical manifestations and gender, disease duration, body mass index and tabagism;\n2. to detect differences in the clinical phenotype between pediatric-onset and adult-onset patients;\n3. to identify the impact of different treatment approaches on clinical and laboratory disease manifestations.\n\nAdditional aims of the AIDA project, to be reached over the next 10 years, are the following:\n\n1. to overcome fragmentation in the clinical experience on these rare conditions by sharing the knowledge at the international level;\n2. to improve knowledge about the clinical presentation, genotype-phenotype correlations, response to treatment, long-term complications and social impact when monogenic and polygenic AID manifest during either childhood or adulthood;\n3. to identify the long-term clinical course of patients diagnosed with monogenic or polygenic AID;\n4. to promote awareness among physicians and enhance early recognition of these diseases;\n5. to describe the impact of AID on quality of life;\n6. to identify any impact of monogenic and polygenic AID on fertility;\n7. to study the course of AID during pregnancy;\n8. to assess the socioeconomic impact of AID;\n9. to promote future multicentric studies.\n\nData collection is both retrospective and prospective. It includes demographic, clinical, diagnostic, genetic, clinimetric, laboratory, radiologic, therapeutic and socio-economic data. Instruments are designed to be filled out during routine clinical visits, usually scheduled every 3-6 months. Separation of personally identifiable information and medical data by using only pseudonyms for storing medical data ensures compliance with data protection regulations. The description of symptoms, diseases, procedures and injuries is based on the International Statistical Classification of Diseases and Related Health Problems (ICD)-10 coding system. Data management is both central and decentral. Data are extracted and statistically analyzed on a regular basis according to individual study protocols. A policy for authorship and dissemination of research findings is in place among the AIDA partners contributing to the registry.\n\nThe AIDA registry will support data collection for the conduction of clinical trials, observational studies, comparative effectiveness research, and other research on patients with monogenic and polygenic AID.\n\nSeveral healthcare providers contributing to the AIDA Network are members of the European Reference Network (ERN) for Rare Immunodeficiency, Autoinflammatory and Autoimmune Diseases (RITA).",
+      "conditions": [
+        "Hereditary Autoinflammatory Diseases",
+        "Schnitzler Syndrome",
+        "Behcet Syndrome",
+        "PFAPA Syndrome",
+        "Still Disease",
+        "Autoinflammatory Syndrome, Unspecified",
+        "Uveitis",
+        "Scleritis",
+        "Vexas Syndrome",
+        "Spondyloarthritis (SpA)",
+        "Castleman Disease"
+      ],
+      "startDate": "2020-08-06",
+      "completionDate": "2030-08-06",
+      "primaryCompletionDate": "2026-08-06",
+      "enrollment": 3500,
+      "enrollmentType": "ESTIMATED",
+      "sponsor": "University of Siena",
+      "sponsorClass": "OTHER",
+      "locations": [
+        {
+          "facility": "University Algiers 1",
+          "city": "Algiers",
+          "country": "Algeria",
+          "geoPoint": {
+            "lat": 36.73225,
+            "lon": 3.08746
+          }
+        },
+        {
+          "facility": "Université M'Hamed Bougara de Boumerdas",
+          "city": "Boumerdas",
+          "country": "Algeria",
+          "geoPoint": {
+            "lat": 36.76639,
+            "lon": 3.47717
+          }
+        },
+        {
+          "facility": "Flinders University",
+          "city": "Adelaide",
+          "country": "Australia",
+          "geoPoint": {
+            "lat": -34.92866,
+            "lon": 138.59863
+          }
+        },
+        {
+          "facility": "University of Adelaide",
+          "city": "Adelaide",
+          "country": "Australia",
+          "geoPoint": {
+            "lat": -34.92866,
+            "lon": 138.59863
+          }
+        },
+        {
+          "facility": "Antwerp University Hospital",
+          "city": "Antwerp",
+          "country": "Belgium",
+          "geoPoint": {
+            "lat": 51.22047,
+            "lon": 4.40026
+          }
+        },
+        {
+          "facility": "Hospital das Clinicas da Faculdade de Medicina HCFMUSP",
+          "city": "São Paulo",
+          "country": "Brazil",
+          "geoPoint": {
+            "lat": -23.5475,
+            "lon": -46.63611
+          }
+        },
+        {
+          "facility": "Peking University People's Hospital",
+          "city": "Beijing",
+          "country": "China",
+          "geoPoint": {
+            "lat": 39.9075,
+            "lon": 116.39723
+          }
+        },
+        {
+          "facility": "The First Affiliated Hospital of Chongqing Medical University",
+          "city": "Chongqing",
+          "country": "China",
+          "geoPoint": {
+            "lat": 29.56026,
+            "lon": 106.55771
+          }
+        },
+        {
+          "facility": "Universidad del Rosario - Escuela de Medicina Y Ciencias de La Salud",
+          "city": "Bogotá",
+          "country": "Colombia",
+          "geoPoint": {
+            "lat": 4.60971,
+            "lon": -74.08175
+          }
+        },
+        {
+          "facility": "Mansoura University, Faculty of Medicine",
+          "city": "Al Mansurah",
+          "country": "Egypt",
+          "geoPoint": {
+            "lat": 31.03637,
+            "lon": 31.38069
+          }
+        },
+        {
+          "facility": "Al-Azhar University",
+          "city": "Cairo",
+          "country": "Egypt",
+          "geoPoint": {
+            "lat": 30.06263,
+            "lon": 31.24967
+          }
+        },
+        {
+          "facility": "Cairo University",
+          "city": "Cairo",
+          "country": "Egypt",
+          "geoPoint": {
+            "lat": 30.06263,
+            "lon": 31.24967
+          }
+        },
+        {
+          "facility": "Universitätsklinikum Schleswig-Holstein",
+          "city": "Lübeck",
+          "country": "Germany",
+          "geoPoint": {
+            "lat": 53.86893,
+            "lon": 10.68729
+          }
+        },
+        {
+          "facility": "Evangelismos General Hospital",
+          "city": "Athens",
+          "country": "Greece",
+          "geoPoint": {
+            "lat": 37.98376,
+            "lon": 23.72784
+          }
+        },
+        {
+          "facility": "National and Kapodistrian University of Athens",
+          "city": "Athens",
+          "country": "Greece",
+          "geoPoint": {
+            "lat": 37.98376,
+            "lon": 23.72784
+          }
+        },
+        {
+          "facility": "National and Kapodistrian University of Athens",
+          "city": "Athens",
+          "country": "Greece",
+          "geoPoint": {
+            "lat": 37.98376,
+            "lon": 23.72784
+          }
+        },
+        {
+          "facility": "Prabha Eye Clinic & Research Centre",
+          "city": "Bangalore",
+          "country": "India",
+          "geoPoint": {
+            "lat": 12.97194,
+            "lon": 77.59369
+          }
+        },
+        {
+          "facility": "Postgraduate Institute of Medical Education and Research",
+          "city": "Chandigarh",
+          "country": "India",
+          "geoPoint": {
+            "lat": 30.73629,
+            "lon": 76.7884
+          }
+        },
+        {
+          "facility": "Shariati Hospital - Tehran University of Medical Sciences",
+          "city": "Tehran",
+          "country": "Iran",
+          "geoPoint": {
+            "lat": 35.69439,
+            "lon": 51.42151
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliero-Universitaria Senese",
+          "city": "Siena",
+          "state": "Tuscany",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.31822,
+            "lon": 11.33064
+          }
+        },
+        {
+          "facility": "AOUC Policlinico di Bari",
+          "city": "Bari",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 41.12066,
+            "lon": 16.86982
+          }
+        },
+        {
+          "facility": "University of Bari Medical School",
+          "city": "Bari",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 41.12066,
+            "lon": 16.86982
+          }
+        },
+        {
+          "facility": "University-Hospital of Bari - UOC Medicina Interna",
+          "city": "Bari",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 41.12066,
+            "lon": 16.86982
+          }
+        },
+        {
+          "facility": "University-Hospital of Bari - UOC Pediatria",
+          "city": "Bari",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 41.12066,
+            "lon": 16.86982
+          }
+        },
+        {
+          "facility": "University-Hospital of Bari - UOC Reumatologia",
+          "city": "Bari",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 41.12066,
+            "lon": 16.86982
+          }
+        },
+        {
+          "facility": "Central Hospital of Bolzano",
+          "city": "Bolzano",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 46.49067,
+            "lon": 11.33982
+          }
+        },
+        {
+          "facility": "ASST degli Spedali Civili - P.O. Ospedale dei Bambini",
+          "city": "Brescia",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.53558,
+            "lon": 10.21472
+          }
+        },
+        {
+          "facility": "ASST degli Spedali Civili",
+          "city": "Brescia",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.53558,
+            "lon": 10.21472
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera Universitaria di Cagliari",
+          "city": "Cagliari",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 39.23054,
+            "lon": 9.11917
+          }
+        },
+        {
+          "facility": "AOU Policlinico Vittorio Emanuele - Dip. Materno-Infantile",
+          "city": "Catania",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 37.49223,
+            "lon": 15.07041
+          }
+        },
+        {
+          "facility": "ARNAS Garibaldi - Catania",
+          "city": "Catania",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 37.49223,
+            "lon": 15.07041
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera di Catanzaro Pugliese Ciaccio",
+          "city": "Catanzaro",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 38.88247,
+            "lon": 16.60086
+          }
+        },
+        {
+          "facility": "Ospedale SS Annunziata",
+          "city": "Chieti",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.34827,
+            "lon": 14.16494
+          }
+        },
+        {
+          "facility": "Ospedale San Paolo",
+          "city": "Civitavecchia",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.09325,
+            "lon": 11.79674
+          }
+        },
+        {
+          "facility": "Arcispedale Sant'Anna",
+          "city": "Ferrara",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.83804,
+            "lon": 11.62057
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera Universitaria Careggi - SOD Medicina Interna Interdisciplinare",
+          "city": "Florence",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.77925,
+            "lon": 11.24626
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliero-Universitaria Careggi - SOD Immunologia e Terapie Cellulari",
+          "city": "Florence",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.77925,
+            "lon": 11.24626
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliero-Universitaria Meyer",
+          "city": "Florence",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.77925,
+            "lon": 11.24626
+          }
+        },
+        {
+          "facility": "Azienza Ospedaliero-Universitaria Careggi - SOD Reumatologia",
+          "city": "Florence",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.77925,
+            "lon": 11.24626
+          }
+        },
+        {
+          "facility": "Ospedale San Giovanni di Dio",
+          "city": "Florence",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.77925,
+            "lon": 11.24626
+          }
+        },
+        {
+          "facility": "Sapienza University - Polo Pontino",
+          "city": "Latina",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 41.46614,
+            "lon": 12.9043
+          }
+        },
+        {
+          "facility": "Ospedale Vito Fazzi",
+          "city": "Lecce",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.35481,
+            "lon": 18.17244
+          }
+        },
+        {
+          "facility": "ASL1 Avezzano, Sulmona, L'Aquila",
+          "city": "L’Aquila",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.35055,
+            "lon": 13.39954
+          }
+        },
+        {
+          "facility": "Università degli Studi di L'Aquila - UOC Medicina Interna e Nefrologia",
+          "city": "L’Aquila",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.35055,
+            "lon": 13.39954
+          }
+        },
+        {
+          "facility": "AOU Policlinico G. Martino",
+          "city": "Messina",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 38.19394,
+            "lon": 15.55256
+          }
+        },
+        {
+          "facility": "ASST Gaetano Pini/ CTO",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.46427,
+            "lon": 9.18951
+          }
+        },
+        {
+          "facility": "Policlinico di Milano",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.46427,
+            "lon": 9.18951
+          }
+        },
+        {
+          "facility": "ASST Fatebenefratelli Sacco - UO Medicina Generale",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.78235,
+            "lon": 12.59836
+          }
+        },
+        {
+          "facility": "ASST Fatebenefratelli Sacco - UOC Reumatologia",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.78235,
+            "lon": 12.59836
+          }
+        },
+        {
+          "facility": "ASST Gaetano Pini/CTO",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.78235,
+            "lon": 12.59836
+          }
+        },
+        {
+          "facility": "IRCCS Ospedale San Raffaele",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.78235,
+            "lon": 12.59836
+          }
+        },
+        {
+          "facility": "Ospedale Fatebenefratelli e Oftalmico",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.78235,
+            "lon": 12.59836
+          }
+        },
+        {
+          "facility": "Ospedale Fatebenefratelli e Oftalmico",
+          "city": "Milan",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 42.78235,
+            "lon": 12.59836
+          }
+        },
+        {
+          "facility": "AORN Cardarelli",
+          "city": "Naples",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.85216,
+            "lon": 14.26811
+          }
+        },
+        {
+          "facility": "AOU Federico II",
+          "city": "Naples",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.85216,
+            "lon": 14.26811
+          }
+        },
+        {
+          "facility": "AOU Federico II",
+          "city": "Naples",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.85216,
+            "lon": 14.26811
+          }
+        },
+        {
+          "facility": "AOU Luigi Vanvitelli - UO Reumatologia",
+          "city": "Naples",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.85216,
+            "lon": 14.26811
+          }
+        },
+        {
+          "facility": "AOU Luigi Vanvitelli - UOC Pediatria 2",
+          "city": "Naples",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.85216,
+            "lon": 14.26811
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera Universitaria di Padova",
+          "city": "Padova",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.38225,
+            "lon": 11.14261
+          }
+        },
+        {
+          "facility": "ARNAS Civico Di Cristina Benfratelli",
+          "city": "Palermo",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 38.1166,
+            "lon": 13.3636
+          }
+        },
+        {
+          "facility": "ARNAS Ospedale Civico di Cristina Benfratelli",
+          "city": "Palermo",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 38.1166,
+            "lon": 13.3636
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera Ospedali Riuniti Villa Sofia-Cervello",
+          "city": "Palermo",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 38.1166,
+            "lon": 13.3636
+          }
+        },
+        {
+          "facility": "Università degli Studi di Palermo",
+          "city": "Palermo",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 38.1166,
+            "lon": 13.3636
+          }
+        },
+        {
+          "facility": "Fondazione IRRCS San Matteo - SC Reumatologia",
+          "city": "Pavia",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.19205,
+            "lon": 9.15917
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera di Perugia",
+          "city": "Perugia",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.1122,
+            "lon": 12.38878
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliero Universitaria Pisana",
+          "city": "Pisa",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.70853,
+            "lon": 10.4036
+          }
+        },
+        {
+          "facility": "University of Pisa",
+          "city": "Pisa",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 43.70853,
+            "lon": 10.4036
+          }
+        },
+        {
+          "facility": "AOU Policlinico Umberto I",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera San Camillo Forlanini",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "IRCCS Fondazione PU Agostino Gemelli - UOC Medicina Interna Columbus",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "IRCCS Fondazione PU Agostino Gemelli - UOC Pediatria",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "Ospedale Pediatrico Bambino Gesù",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "Ospedale Universitario Campus Bio-Medico",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "Sapienza University - Polo Pontino",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "Università di Roma Tor Vergata",
+          "city": "Roma",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.99364,
+            "lon": 11.10642
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera Universitaria di Salerno",
+          "city": "Salerno",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.67545,
+            "lon": 14.79328
+          }
+        },
+        {
+          "facility": "ATS Sardegna",
+          "city": "Tempio Pausania",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 40.90068,
+            "lon": 9.10456
+          }
+        },
+        {
+          "facility": "AO Ordine Mauriziano",
+          "city": "Torino",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 44.88856,
+            "lon": 11.99138
+          }
+        },
+        {
+          "facility": "A.S.L. Vercelli - Ospedale S. Andrea",
+          "city": "Vercelli",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.32163,
+            "lon": 8.41989
+          }
+        },
+        {
+          "facility": "Azienda Ospedaliera Universitaria Integrata",
+          "city": "Verona",
+          "country": "Italy",
+          "geoPoint": {
+            "lat": 45.43854,
+            "lon": 10.9938
+          }
+        },
+        {
+          "facility": "Tripoli Children Hospital",
+          "city": "Tripoli",
+          "country": "Libya",
+          "geoPoint": {
+            "lat": 32.88743,
+            "lon": 13.18733
+          }
+        },
+        {
+          "facility": "Tripoli Children Hospital",
+          "city": "Tripoli",
+          "country": "Libya",
+          "geoPoint": {
+            "lat": 32.88743,
+            "lon": 13.18733
+          }
+        },
+        {
+          "facility": "University Hospital of Martinique",
+          "city": "Fort-de-France",
+          "country": "Martinique",
+          "geoPoint": {
+            "lat": 14.60365,
+            "lon": -61.07418
+          }
+        },
+        {
+          "facility": "Asociacion para Evitar la Ceguera en México",
+          "city": "Mexico City",
+          "country": "Mexico",
+          "geoPoint": {
+            "lat": 19.42847,
+            "lon": -99.12766
+          }
+        },
+        {
+          "facility": "Instituto Nacional de Ciencias Médicas y Nutrición Salvador Zubirán",
+          "city": "Mexico City",
+          "country": "Mexico",
+          "geoPoint": {
+            "lat": 19.42847,
+            "lon": -99.12766
+          }
+        },
+        {
+          "facility": "Medical University of Lodz",
+          "city": "Lodz",
+          "country": "Poland",
+          "geoPoint": {
+            "lat": 51.77058,
+            "lon": 19.47395
+          }
+        },
+        {
+          "facility": "Central Clinical Hospital of the Ministry of National Defense - Military Institute of Medicine",
+          "city": "Warsaw",
+          "country": "Poland",
+          "geoPoint": {
+            "lat": 52.22977,
+            "lon": 21.01178
+          }
+        },
+        {
+          "facility": "Sf. Maria Hospital - University of Medicine and Pharmacy \"Carol Davila\"",
+          "city": "Bucharest",
+          "country": "Romania",
+          "geoPoint": {
+            "lat": 44.43225,
+            "lon": 26.10626
+          }
+        },
+        {
+          "facility": "Jazan University",
+          "city": "Jizan",
+          "country": "Saudi Arabia",
+          "geoPoint": {
+            "lat": 16.88917,
+            "lon": 42.55111
+          }
+        },
+        {
+          "facility": "King Faisal Specialist Hospital and Research Center",
+          "city": "Riyadh",
+          "country": "Saudi Arabia",
+          "geoPoint": {
+            "lat": 24.68773,
+            "lon": 46.72185
+          }
+        },
+        {
+          "facility": "King Saud University",
+          "city": "Riyadh",
+          "country": "Saudi Arabia",
+          "geoPoint": {
+            "lat": 24.68773,
+            "lon": 46.72185
+          }
+        },
+        {
+          "facility": "Hospital Universitario Cruces - Instituto de investigación sanitaria Biocruces",
+          "city": "Barakaldo",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 43.29639,
+            "lon": -2.98813
+          }
+        },
+        {
+          "facility": "Hospital Universitario Cruces",
+          "city": "Barakaldo",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 43.29639,
+            "lon": -2.98813
+          }
+        },
+        {
+          "facility": "Hospital Clinic of Barcelona",
+          "city": "Barcelona",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 41.38879,
+            "lon": 2.15899
+          }
+        },
+        {
+          "facility": "Hospital Fundación Jiménez Díaz",
+          "city": "Madrid",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 40.4165,
+            "lon": -3.70256
+          }
+        },
+        {
+          "facility": "Hospital Ramón y Cajal",
+          "city": "Madrid",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 40.4165,
+            "lon": -3.70256
+          }
+        },
+        {
+          "facility": "Hospital Universitario Fundación Jiménez Díaz/Hospital Universitario Rey Juan Carlos",
+          "city": "Madrid",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 40.4165,
+            "lon": -3.70256
+          }
+        },
+        {
+          "facility": "Hospital Universitario Marqués de Valdecilla",
+          "city": "Santander",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 43.46589,
+            "lon": -3.80493
+          }
+        },
+        {
+          "facility": "Hospital Universitari Doctor Peset",
+          "city": "Valencia",
+          "country": "Spain",
+          "geoPoint": {
+            "lat": 39.47391,
+            "lon": -0.37966
+          }
+        },
+        {
+          "facility": "Farhat Hached Hospital",
+          "city": "Sousse",
+          "country": "Tunisia",
+          "geoPoint": {
+            "lat": 35.82539,
+            "lon": 10.63699
+          }
+        },
+        {
+          "facility": "Çukurova University",
+          "city": "Adana",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 36.98615,
+            "lon": 35.32531
+          }
+        },
+        {
+          "facility": "Ankara Yıldırım Beyazıt University",
+          "city": "Ankara",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 39.91987,
+            "lon": 32.85427
+          }
+        },
+        {
+          "facility": "Gazi University",
+          "city": "Ankara",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 39.91987,
+            "lon": 32.85427
+          }
+        },
+        {
+          "facility": "Hacettepe University Faculty of Medicine",
+          "city": "Ankara",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 39.91987,
+            "lon": 32.85427
+          }
+        },
+        {
+          "facility": "Başakşehir Çam and Sakura City Hospital",
+          "city": "Istanbul",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 41.01384,
+            "lon": 28.94966
+          }
+        },
+        {
+          "facility": "Cerrahpasa Medical School Istanbul University",
+          "city": "Istanbul",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 41.01384,
+            "lon": 28.94966
+          }
+        },
+        {
+          "facility": "Marmara University, Research And Education Hospital",
+          "city": "Istanbul",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 41.01384,
+            "lon": 28.94966
+          }
+        },
+        {
+          "facility": "Dokuz Eylul University School of Medicine",
+          "city": "Izmir",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 38.41273,
+            "lon": 27.13838
+          }
+        },
+        {
+          "facility": "Manisa Celal Bayar University",
+          "city": "Manisa",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 38.61202,
+            "lon": 27.42647
+          }
+        },
+        {
+          "facility": "Sakarya University",
+          "city": "Sakarya",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 39.50333,
+            "lon": 32.07583
+          }
+        },
+        {
+          "facility": "Sivas Cumhuriyet University",
+          "city": "Sivas",
+          "country": "Turkey (Türkiye)",
+          "geoPoint": {
+            "lat": 39.74833,
+            "lon": 37.01611
+          }
+        },
+        {
+          "facility": "I. Horbachevsky Ternopil National Medical University - Ternopil Regional Children's Hospital",
+          "city": "Ternopil",
+          "country": "Ukraine",
+          "geoPoint": {
+            "lat": 49.55404,
+            "lon": 25.59067
+          }
+        }
+      ],
+      "interventions": [
+        {
+          "type": "OTHER",
+          "name": "No intervention is foreseen by the protocol.",
+          "description": "Patients will be observed for 10 years at least. Demographic, genetic, clinical, clinimetric, laboratory, radiologic and therapeutic data will be collected both retrospectively and prospectively during routine follow-up visits."
+        }
+      ],
+      "hasResults": false,
+      "url": "https://clinicaltrials.gov/study/NCT05200715"
+    },
+    {
+      "nctId": "NCT05995288",
+      "briefTitle": "Homeopathic Treatment of Children Suffering From PFAPA",
+      "officialTitle": "Homeopathic Treatment of Children Suffering From PFAPA: a Retrospective Case Series.",
+      "status": "COMPLETED",
+      "statusVerifiedDate": "2023-08",
+      "studyType": "OBSERVATIONAL",
+      "phases": [],
+      "briefSummary": "Periodic fever, aphthous stomatitis, pharyngitis, cervical adenitis (PFAPA) syndrome is frequently diagnosed in young children. Fevers recurring at a nearly predictable rate every three to eight weeks are the signature symptom of PFAPA syndrome. PFAPA is an acquired autoinflammatory disorder, which recurs in association with at least one sign of aphthous stomatitis, pharyngitis, and cervical lymph node enlargement. The aim of this retrospective case report is to gain an impression of the course of disease during individualized homeopathic treatment in children suffering from PFAPA.",
+      "detailedDescription": "In this retrospective study, the investigators collected the history and symptoms of 13 consecutive PFAPA patients. The investigators also described the individually chosen homeopathic medicinal products (HMPs) used, as well as the course of the disease. Clinical outcome of case reports was assessed using the \"Modified Naranjo Criteria for Homeopathy-Causal Attribution Inventory\". Eight points are taken as the threshold for the possible correlation between homeopathic therapy and improvement of symptoms or cure in chronic cases",
+      "conditions": [
+        "Periodic Fever Syndrome"
+      ],
+      "startDate": "2019-05-01",
+      "completionDate": "2023-08-08",
+      "primaryCompletionDate": "2020-12-31",
+      "enrollment": 13,
+      "enrollmentType": "ACTUAL",
+      "sponsor": "Michael Frass",
+      "sponsorClass": "OTHER",
+      "locations": [
+        {
+          "facility": "Michael Frass",
+          "city": "Vienna",
+          "country": "Austria",
+          "geoPoint": {
+            "lat": 48.20849,
+            "lon": 16.37208
+          }
+        }
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "Homeopathic Globule",
+          "description": "Homeopathic globules were administered after careful anamnesis"
+        }
+      ],
+      "hasResults": false,
+      "url": "https://clinicaltrials.gov/study/NCT05995288"
+    },
+    {
+      "nctId": "NCT03331497",
+      "briefTitle": "Tonsillotomy or Follow-up in PFAPA Syndrome",
+      "officialTitle": "Tonsillotomy or Follow-up in PFAPA -Syndrome - Randomised, Controlled Study Using Sequential Design",
+      "status": "COMPLETED",
+      "statusVerifiedDate": "2022-02",
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "NA"
+      ],
+      "briefSummary": "Children with periodic fever, aphthous stomatitis, pharyngitis, adenitis (PFAPA) -syndrome diagnosis will be randomised either to tonsillotomy (partial tonsillectomy) or 3 months follow up. At follow up visit 3 months after randomisation the children from either groups with ongoing symptoms will be sent to tonsillectomy.",
+      "detailedDescription": "Children with periodic fever, aphthous stomatitis, pharyngitis, adenitis (PFAPA) -syndrome diagnosis will be randomised either to tonsillotomy (partial tonsillectomy) or 3 months follow up.\n\nIn both groups the symptoms are monitored with symptom diaries. At follow up visit 3 months after randomisation the children from either groups with ongoing symptoms will be sent to tonsillectomy (total remove of palatine tonsil).\n\nThe design is sequential trial. From the previous trials we know that the effect of tonsillectomy is about 90% and that during follow up for six months as much as 50% of the patients will recover. Because the syndrome is rare and because the rescue operations of the tonsils (tonsillectomy in a person who has gone through tonsillotomy), the sample size has to be as low as possible. That is the reason why we chose sequential design, with assessments after every 8 patient.\n\nRandomization is made in blocks of four. In sequential design we use the following assumptions:\n\n* We are looking for a 40% absolute difference in cure rate between tonsillotomy (90%) and follow up (50%) groups.\n* Two sided Whitehead design\n* Maximum likelihood estimation (MLE)\n* Five assessments (sample size 4+4, 8+8. 12+12, 16+16 and 19+19)\n* type 1 error 5 % and power 80%\n* The sample size will be from 8 to 38 patients depending on when the trial can be stopped along assessments.",
+      "conditions": [
+        "PFAPA Syndrome"
+      ],
+      "startDate": "2017-10-24",
+      "completionDate": "2022-02-02",
+      "primaryCompletionDate": "2021-12-30",
+      "enrollment": 22,
+      "enrollmentType": "ACTUAL",
+      "sponsor": "University of Oulu",
+      "sponsorClass": "OTHER",
+      "locations": [
+        {
+          "facility": "Oulu Unversity Hospital",
+          "city": "Oulu",
+          "country": "Finland",
+          "geoPoint": {
+            "lat": 65.01236,
+            "lon": 25.46816
+          }
+        },
+        {
+          "facility": "Tampere University Hospital",
+          "city": "Tampere",
+          "country": "Finland",
+          "geoPoint": {
+            "lat": 61.49911,
+            "lon": 23.78712
+          }
+        },
+        {
+          "facility": "Turku University Hospital",
+          "city": "Turku",
+          "country": "Finland",
+          "geoPoint": {
+            "lat": 60.45148,
+            "lon": 22.26869
+          }
+        }
+      ],
+      "interventions": [
+        {
+          "type": "PROCEDURE",
+          "name": "Tonsillotomy",
+          "description": "About 2/3 of the palatine tonsil tissue is removed with coplator or bipolar knife."
+        }
+      ],
+      "hasResults": false,
+      "url": "https://clinicaltrials.gov/study/NCT03331497"
+    },
+    {
+      "nctId": "NCT02811705",
+      "briefTitle": "Life Quality Study for PFAPA Patient",
+      "status": "COMPLETED",
+      "statusVerifiedDate": "2023-02",
+      "studyType": "OBSERVATIONAL",
+      "phases": [],
+      "briefSummary": "This cohort study aims to assess the quality of life (or welfare) related to the health of children and adolescents with an non genetics auto-inflammatory disease PFAPA or Marshall syndrome to compare it to children or adolescents with recurrent fever genetics of Familial Mediterranean fever (FMF) in order to improve their overall care.",
+      "conditions": [
+        "PFAPA Syndrome"
+      ],
+      "startDate": "2015-07",
+      "completionDate": "2017-04",
+      "primaryCompletionDate": "2016-12",
+      "enrollment": 60,
+      "enrollmentType": "ACTUAL",
+      "sponsor": "Versailles Hospital",
+      "sponsorClass": "OTHER",
+      "locations": [
+        {
+          "facility": "Centre hospitalier de Versailles",
+          "city": "Le Chesnay",
+          "country": "France",
+          "geoPoint": {
+            "lat": 48.8222,
+            "lon": 2.12213
+          }
+        },
+        {
+          "facility": "CH de Bicètre",
+          "city": "Paris",
+          "country": "France",
+          "geoPoint": {
+            "lat": 48.85341,
+            "lon": 2.3488
+          }
+        }
+      ],
+      "interventions": [
+        {
+          "type": "OTHER",
+          "name": "Quality of life",
+          "description": "Quality of life"
+        }
+      ],
+      "hasResults": false,
+      "url": "https://clinicaltrials.gov/study/NCT02811705"
+    }
+  ]
 }
